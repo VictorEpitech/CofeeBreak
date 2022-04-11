@@ -6,7 +6,7 @@ import userAtom from "../../context/atoms/userAtom"
 import { client } from "../../utils/client"
 
 
-export function SuccessAuth() {
+export default function SuccessAuth() {
   const router = useRouter()
   const [user, setUser] = useRecoilState(userAtom)
   useEffect(() => {
