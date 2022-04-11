@@ -1,12 +1,23 @@
 import {useState} from "react"
+import toast from "react-hot-toast"
+import { client } from "../utils/client"
 
-export default function FundsAdd({isOpen, setIsOpen}) {
+export default function FundsAdd({isOpen, setIsOpen, latestAmount}) {
 
-  const [value, setValue] = useState()
+  const [value, setValue] = useState(0)
   const [reason, setReason] = useState("")
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async(e) => {
     e.preventDefault()
+    const total = parseFloat(value) + parseFloat(latestAmount);
+    try {
+      await client.database.createDocument(process.env.NEXT_PUBLIC_FUND_COLLECTION, "unique()", {amount: value, reason: reason || null, date: new Date().toISOString(), totalAmount: total})
+      toast.success("funds updated")
+      setIsOpen(false);
+    } catch (error) {
+      console.error(error)
+      toast.error("something went wrong")
+    }
   }
 
 
