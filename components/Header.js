@@ -17,7 +17,7 @@ export default function Header() {
             <div className="navbar-end">
             <ul className="menu menu-horizontal rounded-box">
               <li><Link href="/dashboard/funds">Funds</Link></li>
-              <li><Link href="">Credits</Link></li>
+              <li><Link href="/dashboard/credits">Credits</Link></li>
               <li><Link href="">Consume</Link></li>
             </ul>
               <div className="dropdown dropdown-end">
