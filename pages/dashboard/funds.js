@@ -51,13 +51,13 @@ export default function DashboardFunds() {
           </tr>
         </thead>
         <tbody>
-          {funds.map((e) => (
+          {funds.map((e, idx) => (
             <tr key={e.$id}>
               <th>{new Date(e.date).toLocaleDateString()}</th>
               <th>{e.amount}</th>
               <th>{e.reason ?? "N/A"}</th>
               <th>{e.totalAmount.toFixed(2)}</th>
-              <th>
+{             idx === funds.length - 1 && <th>
                 <button className="btn btn-error" onClick={async() => {
                   if (confirm("want to delete this element?")) {
                     try {
@@ -73,7 +73,7 @@ export default function DashboardFunds() {
                   <Trash />
                   </div>
                 </button>
-              </th>
+              </th>}
             </tr>
           ))}
         </tbody>

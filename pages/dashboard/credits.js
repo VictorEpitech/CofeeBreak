@@ -1,10 +1,13 @@
 import { useRouter } from "next/router"
 import { useState, useEffect } from "react"
+import ChargesAdd from "../../components/CreditsAdd"
 import { client } from "../../utils/client"
 
 export default function Credits() {
 
   const [charges, setCharges] = useState([])
+  const [showModal, setShowModal] = useState(false)
+  const [currentDoc, setCurrentDoc] = useState()
   const router = useRouter()
 
 
@@ -38,8 +41,9 @@ export default function Credits() {
   }, [])
 
   return (
-    <div className="h-ful w-full">
-      <table className="table w-full">
+    <div className="h-full w-full relative">
+      <ChargesAdd isOpen={showModal} setIsOpen={setShowModal} doc={currentDoc} />
+      <table className="table w-full z-0">
         <thead>
           <tr>
             <th>login</th>
@@ -55,8 +59,12 @@ export default function Credits() {
               <th>
                 <button
                   className="btn btn-primary" 
-                  onClick={() => {
-                }}>                  <span className="uppercase">recharge</span>
+                  onClick={async() => {
+                    setCurrentDoc(e);
+                    setShowModal(true)
+                  }}
+                >
+                  <span className="uppercase">recharge</span>
                 </button>
               </th>
             </tr>
