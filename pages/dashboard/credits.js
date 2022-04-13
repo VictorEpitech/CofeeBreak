@@ -1,6 +1,8 @@
 import { useRouter } from "next/router"
 import { useState, useEffect } from "react"
+import { useSetRecoilState } from "recoil"
 import ChargesAdd from "../../components/CreditsAdd"
+import loadingAtom from "../../context/atoms/loadingAtom"
 import { client } from "../../utils/client"
 
 export default function Credits() {
@@ -9,18 +11,21 @@ export default function Credits() {
   const [showModal, setShowModal] = useState(false)
   const [currentDoc, setCurrentDoc] = useState()
   const router = useRouter()
+  const setLoading = useSetRecoilState(loadingAtom)
 
 
   useEffect(() => {
     const getCharges = async() => {
+      setLoading(true)
       const data = await client.database.listDocuments(process.env.NEXT_PUBLIC_CREDIT_COLLECTION, undefined, 25, router.query.page ? (page - 1) * 25 : 0, undefined, undefined)
       if (data.total > 25) {
         console.log("should paginate")
       }
-      setCharges(data.documents);    
+      setCharges(data.documents);
+      setLoading(false)
     }
     getCharges()
-  }, [router])
+  }, [router, setLoading])
 
   useEffect(() => {
     const subscription = client.subscribe(`collections.${process.env.NEXT_PUBLIC_CREDIT_COLLECTION}.documents`, (e) => {

@@ -1,7 +1,10 @@
 import { useRouter } from "next/router"
 import { useState, useEffect } from "react"
+
 import toast from "react-hot-toast"
+import { useSetRecoilState } from "recoil"
 import FundsAdd from "../../components/FundsAdd"
+import loadingAtom from "../../context/atoms/loadingAtom"
 import Trash from "../../icons/trash"
 import { client } from "../../utils/client"
 
@@ -10,18 +13,22 @@ export default function DashboardFunds() {
   const [totalPages, setTotalPages] = useState(1)
   const [showModal, setShowModal] = useState(false)
   const router = useRouter()
+  const setLoading = useSetRecoilState(loadingAtom)
+
 
 
   useEffect(() => {
     const getFunds = async() => {
+      setLoading(true)
       const data = await client.database.listDocuments(process.env.NEXT_PUBLIC_FUND_COLLECTION, undefined, 25, router.query.page ? (page - 1) * 25 : 0, undefined, undefined, ["date"], ["ASC"])
       if (data.total > 25) {
         console.log("should paginate")
       }
       setFunds(data.documents);
+      setLoading(false)
     }
     getFunds()
-  }, [router, setFunds])
+  }, [router, setFunds, setLoading])
 
   useEffect(() => {
     const unsub = client.subscribe(`collections.${process.env.NEXT_PUBLIC_FUND_COLLECTION}.documents`, (e) => {
