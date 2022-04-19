@@ -19,8 +19,10 @@ export default function Home() {
         
       }
     }
-    checkForSignIn()
-  }, [router, setUser])
+    if (!u) {
+      checkForSignIn()
+    }
+  }, [router, u, setUser])
   return (
     <div className="flex flex-col justify-center items-center w-full h-full">
       <h1 className="text-3xl font-bold mb-4">CoffeBreak Moulins</h1>
