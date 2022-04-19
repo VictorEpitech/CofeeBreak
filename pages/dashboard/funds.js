@@ -93,7 +93,7 @@ export default function DashboardFunds() {
           <button 
           className="btn"
           onClick={() => {
-            router.push(`/dashboard/funds?page=${parseInt(router.query.page) + 1}`)
+            router.push(`/dashboard/funds?page=${(parseInt(router.query.page) || 1) + 1}`)
           }}
           disabled={router.query?.page == totalPages}>{">"}</button>
           <button className="btn" disabled={router.query?.page == totalPages} onClick={() => {
