@@ -44,9 +44,9 @@ export default function DashboardFunds() {
   return (
     <div className="w-full h-full relative">
       <FundsAdd isOpen={showModal} setIsOpen={setShowModal} latestAmount={funds[funds.length - 1]?.totalAmount || 0} />
-      <button className="absolute btn btn-error bottom-10 right-5 rounded-full z-10" onClick={() => setShowModal(true)}>
+{     router.query?.page == totalPages && <button className="absolute btn btn-error bottom-10 right-5 rounded-full z-10" onClick={() => setShowModal(true)}>
         <span className="text-xl font-bold">+</span>
-      </button>
+      </button>}
       <table className="table w-full z-0">
         <thead>
           <tr>
