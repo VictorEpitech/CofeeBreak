@@ -1,6 +1,6 @@
 import { Appwrite } from "appwrite";
 
-const BASE_URL = process.env.NODE_ENV === "development" ? "http://localhost:4000" : "";
+const BASE_URL = process.env.NODE_ENV === "development" ? "http://localhost:4000" : "https://cofee-break.vercel.app";
 
 const client = new Appwrite().setEndpoint(process.env.NEXT_PUBLIC_APPWRITE_URL).setProject(process.env.NEXT_PUBLIC_APPWRITE_PROJECT)
 
