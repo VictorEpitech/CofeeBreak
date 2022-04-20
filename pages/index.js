@@ -12,16 +12,15 @@ export default function Home() {
     const checkForSignIn = async() => {
       try {
         const user = await client.account.get()
-        toast.success(`welcome back, ${user.name}`)
+        if (u) {
+          router.push("/dashboard")
+        }
         setUser(user);
-        router.push("/dashboard")
       } catch (error) {
         
       }
     }
-    if (!u) {
-      checkForSignIn()
-    }
+    checkForSignIn()
   }, [router, u, setUser])
   return (
     <div className="flex flex-col justify-center items-center w-full h-full">

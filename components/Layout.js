@@ -1,4 +1,6 @@
+import { useRouter } from "next/router";
 import { useEffect } from "react";
+import toast from "react-hot-toast";
 import { useRecoilState, useRecoilValue } from "recoil";
 import loadingAtom from "../context/atoms/loadingAtom";
 import userAtom from "../context/atoms/userAtom";
@@ -10,6 +12,7 @@ export default function Layout({children}) {
 
   const [user, setUser] = useRecoilState(userAtom);
   const loading = useRecoilValue(loadingAtom);
+  const router = useRouter()
 
   useEffect(() => {
     const getUser = async() => {
@@ -17,6 +20,8 @@ export default function Layout({children}) {
         const u = await client.account.get()
         setUser(u)
       } catch (error) {
+        toast.error("could not authenticate you, please sign in again")
+        router.push("/")
       }
     }
     getUser()
