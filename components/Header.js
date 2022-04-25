@@ -18,7 +18,7 @@ export default function Header() {
             <ul className="menu menu-horizontal rounded-box">
               <li><Link href="/dashboard/funds">Funds</Link></li>
               <li><Link href="/dashboard/credits">Credits</Link></li>
-              <li><Link href="">Consume</Link></li>
+              <li><Link href="/dashboard/consumes">Consume</Link></li>
             </ul>
               <div className="dropdown dropdown-end">
                 <label tabIndex="0" className="btn btn-ghost btn-circle avatar">
@@ -27,7 +27,7 @@ export default function Header() {
                   </div>
                 </label>
                 <ul tabIndex="0" className="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52">
-                  <li><a>Logout</a></li>
+                  <li><Link href="/auth/signout">Logout</Link></li>
                 </ul>
               </div>
             </div>

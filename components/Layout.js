@@ -24,8 +24,10 @@ export default function Layout({children}) {
         router.push("/")
       }
     }
-    getUser()
-  }, [setUser])
+    if (router.pathname !== "/") {
+      getUser()
+    }
+  }, [router, setUser])
 
   return (
     <div id="root" className="relative">

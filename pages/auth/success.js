@@ -14,9 +14,11 @@ export default function SuccessAuth() {
       try {
         const u = await client.account.get()
         setUser(u)
+        router.push("/dashboard")
       } catch (error) {
         toast.error("something went wrong")
         console.error(error)
+        router.push("/")
       }
     }
     getUser()
