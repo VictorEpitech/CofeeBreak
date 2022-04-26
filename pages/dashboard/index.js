@@ -11,7 +11,9 @@ export default function DashboardHome() {
     const getFunds = (async() => {
       setLoading(true)
       const fundData = await client.database.listDocuments(process.env.NEXT_PUBLIC_FUND_COLLECTION, undefined, 1, undefined, undefined, undefined, ["date"], ["DESC"])
-      setFund(fundData.documents[0].totalAmount)
+      if (fundData.documents.length > 0) {
+        setFund(fundData.documents[0].totalAmount)
+      }
       setLoading(false);
     })
     getFunds()

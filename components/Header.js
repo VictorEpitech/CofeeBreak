@@ -9,7 +9,7 @@ export default function Header() {
     <header>
       <div className="navbar bg-base-100">
         <div className="flex-1">
-          <Link passHref href="/"><a className="btn btn-ghost normal-case text-xl">CofeeBreak</a></Link>
+          <Link passHref href={user ? "/dashboard" : "/"}><a className="btn btn-ghost normal-case text-xl">CofeeBreak</a></Link>
         </div>
         {
           user !== null &&
