@@ -1,9 +1,10 @@
 import { useRouter } from "next/router"
 import { useState, useEffect } from "react"
 import toast from "react-hot-toast"
-import { useSetRecoilState } from "recoil"
+import { useRecoilValue, useSetRecoilState } from "recoil"
 import FundsAdd from "../../components/FundsAdd"
 import loadingAtom from "../../context/atoms/loadingAtom"
+import payMethodsAtom from "../../context/atoms/payMethods"
 import Trash from "../../icons/trash"
 import { client } from "../../utils/client"
 
@@ -14,6 +15,7 @@ export default function DashboardFunds() {
   const [showModal, setShowModal] = useState(false)
   const router = useRouter()
   const setLoading = useSetRecoilState(loadingAtom)
+  const payMethods = useRecoilValue(payMethodsAtom);
 
   useEffect(() => {
     const getFunds = async () => {
@@ -55,6 +57,7 @@ export default function DashboardFunds() {
             <th>Date</th>
             <th>Amount</th>
             <th>Reason</th>
+            <th>Origin</th>
             <th>Total</th>
             <th>Actions</th>
           </tr>
@@ -66,8 +69,9 @@ export default function DashboardFunds() {
                 <td>{new Date(e.date).toLocaleDateString()}</td>
                 <td>{e.amount}</td>
                 <td>{e.reason || "N/A"}</td>
+                <td>{payMethods.find((p) => p.$id === e.method)?.name}</td>
                 <td>{e.totalAmount}</td>
-                <td>{(idx === funds.length - 1 && router.query?.page == totalPages) && <button className="btn btn-warning" onClick={async() => {
+                <td>{(idx === funds.length - 1 && (router.query?.page == totalPages || totalPages === 1)) && <button className="btn btn-warning" onClick={async() => {
                   await client.database.deleteDocument(process.env.NEXT_PUBLIC_FUND_COLLECTION, e.$id);
                   toast.success("deleted document")
                 }}><Trash /></button>}</td>

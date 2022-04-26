@@ -1,17 +1,25 @@
 import {useState} from "react"
 import toast from "react-hot-toast"
+import { useRecoilValue } from "recoil"
+import payMethodsAtom from "../context/atoms/payMethods"
 import { client } from "../utils/client"
 
 export default function FundsAdd({isOpen, setIsOpen, latestAmount}) {
 
   const [value, setValue] = useState(0)
   const [reason, setReason] = useState("")
+  const [payment, setPayment] = useState(undefined)
+  const payMethods = useRecoilValue(payMethodsAtom);
 
   const handleSubmit = async(e) => {
     e.preventDefault()
     const total = parseFloat(value) + parseFloat(latestAmount);
+    if (!payment || payment === "none") {
+      toast.error("Please choose a payment method");
+      return;
+    }
     try {
-      await client.database.createDocument(process.env.NEXT_PUBLIC_FUND_COLLECTION, "unique()", {amount: value, reason: reason || null, date: new Date().toISOString(), totalAmount: total})
+      await client.database.createDocument(process.env.NEXT_PUBLIC_FUND_COLLECTION, "unique()", {amount: value, reason: reason || null, date: new Date().toISOString(), totalAmount: total, method: payment})
       toast.success("funds updated")
       setIsOpen(false);
     } catch (error) {
@@ -32,6 +40,10 @@ export default function FundsAdd({isOpen, setIsOpen, latestAmount}) {
                 <div className="form-control">
                   <label className="label"><span className="label-text">Amount</span></label>
                   <input className="input input-bordered w-full max-w-xs" type="number" placeholder="Enter Amount" required value={value} onChange={(e) => setValue(e.target.value)}/>
+                  <select className="select select-bordered w-full max-w-x" defaultValue="none" required onChange={(e) => setPayment(e.target.value)}>
+                    <option disabled value="none">Select payment method</option>
+                    {payMethods.map((e) => <option key={e.$id} value={e.$id}>{e.name}</option>)}
+                  </select>
                   {value < 0 && 
                     <>
                       <label className="label"><span className="label-text">Reason</span></label>

@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import toast from "react-hot-toast";
 import { useRecoilState, useRecoilValue } from "recoil";
 import loadingAtom from "../context/atoms/loadingAtom";
+import payMethodsAtom from "../context/atoms/payMethods";
 import userAtom from "../context/atoms/userAtom";
 import { client } from "../utils/client";
 import Footer from "./Footer";
@@ -11,6 +12,7 @@ import Header from "./Header";
 export default function Layout({children}) {
 
   const [user, setUser] = useRecoilState(userAtom);
+  const [payMethods, setPayMethods] = useRecoilState(payMethodsAtom);
   const loading = useRecoilValue(loadingAtom);
   const router = useRouter()
 
@@ -24,8 +26,21 @@ export default function Layout({children}) {
         router.push("/")
       }
     }
+    const getPayMethods = async() => {
+      try {
+        const res = await client.database.listDocuments(process.env.NEXT_PUBLIC_PAYMENT_COLLECTION);
+        if (res.documents.length > 0) {
+          setPayMethods(res.documents);
+        }
+      } catch (error) {
+        toast.error("could not get payment methods")
+        console.error(error)
+        router.push("/")
+      }
+    }
     if (router.pathname !== "/") {
       getUser()
+      getPayMethods()
     }
   }, [router, setUser])
 
