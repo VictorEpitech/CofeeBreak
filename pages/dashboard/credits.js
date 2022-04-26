@@ -48,6 +48,8 @@ export default function Credits() {
   return (
     <div className="h-full w-full relative">
       <ChargesAdd isOpen={showModal} setIsOpen={setShowModal} doc={currentDoc} />
+      {charges.length === 0 &&  <div className="w-full h-full flex flex-col justify-center items-center"><h3>No data here...</h3></div>}
+      {charges.length > 0 && <>
       <table className="table w-full z-0">
         <thead>
           <tr>
@@ -76,6 +78,7 @@ export default function Credits() {
           ))}
         </tbody>
       </table>
+      </>}
     </div>
   )
 }

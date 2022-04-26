@@ -43,10 +43,12 @@ export default function DashboardFunds() {
 
   return (
     <div className="w-full h-full relative">
+            {funds.length === 0 &&  <div className="w-full h-full flex flex-col justify-center items-center"><h3>No data here...</h3></div>}
       <FundsAdd isOpen={showModal} setIsOpen={setShowModal} latestAmount={funds[funds.length - 1]?.totalAmount || 0} />
 {     (router.query?.page ?? 1) == totalPages && <button className="absolute btn btn-error bottom-10 right-5 rounded-full z-10" onClick={() => setShowModal(true)}>
         <span className="text-xl font-bold">+</span>
       </button>}
+      {funds.length > 0 && <>
       <table className="table w-full z-0">
         <thead>
           <tr>
@@ -101,6 +103,7 @@ export default function DashboardFunds() {
           }}>{">>"}</button>
       </div>
       </div>
+      </>}
     </div>
   )
 }

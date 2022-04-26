@@ -51,6 +51,8 @@ export default function Consumes() {
 
   return (
     <div className="w-full h-full relative">
+      {consumed.length === 0 && <div className="w-full h-full flex flex-col justify-center items-center"><h3>No data here...</h3></div>}
+      {consumed.length > 0 &&<>
       <table className="table w-full z-0">
         <thead>
           <tr>
@@ -97,7 +99,7 @@ export default function Consumes() {
             router.push(`/dashboard/consumes?page=${totalPages}`, undefined)
           }}>{">>"}</button>
       </div>
-      </div>
+      </div></>}
     </div>
   )
 }
