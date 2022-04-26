@@ -22,6 +22,9 @@ export default function FundsAdd({isOpen, setIsOpen, latestAmount}) {
       await client.database.createDocument(process.env.NEXT_PUBLIC_FUND_COLLECTION, "unique()", {amount: value, reason: reason || null, date: new Date().toISOString(), totalAmount: total, method: payment})
       toast.success("funds updated")
       setIsOpen(false);
+      setValue(0)
+      setReason("")
+      setPayment(undefined)
     } catch (error) {
       console.error(error)
       toast.error("something went wrong")

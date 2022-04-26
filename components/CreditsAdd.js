@@ -4,6 +4,7 @@ import { client } from "../utils/client";
 
 export default function ChargesAdd({isOpen, setIsOpen, doc}) {
   const [value, setValue] = useState(0)
+  const [inFunds, setInFunds] = useState(true)
 
   const handleSubmit = async(e) => {
     e.preventDefault()
@@ -12,9 +13,11 @@ export default function ChargesAdd({isOpen, setIsOpen, doc}) {
       console.log(doc)
       await client.database.updateDocument(process.env.NEXT_PUBLIC_CREDIT_COLLECTION, doc["$id"], {email:  doc.email, charges: total});
       toast.success("charges updated")
-      const latestFund = await client.database.listDocuments(process.env.NEXT_PUBLIC_FUND_COLLECTION, undefined, 1, undefined, undefined, undefined, ["date"], ["DESC"]);
-      await client.database.createDocument(process.env.NEXT_PUBLIC_FUND_COLLECTION, "unique()", {amount: value * parseFloat(process.env.NEXT_PUBLIC_CHARGE_VALUE), reason: `${doc.email} recharge` || null, date: new Date().toISOString(), totalAmount: (latestFund.documents[0]?.totalAmount ?? 0) + (value * parseFloat(process.env.NEXT_PUBLIC_CHARGE_VALUE))});
-      toast.success("funds updated");
+      if (inFunds) {
+        const latestFund = await client.database.listDocuments(process.env.NEXT_PUBLIC_FUND_COLLECTION, undefined, 1, undefined, undefined, undefined, ["date"], ["DESC"]);
+        await client.database.createDocument(process.env.NEXT_PUBLIC_FUND_COLLECTION, "unique()", {amount: value * parseFloat(process.env.NEXT_PUBLIC_CHARGE_VALUE), reason: `${doc.email} recharge` || null, date: new Date().toISOString(), totalAmount: (latestFund.documents[0]?.totalAmount ?? 0) + (value * parseFloat(process.env.NEXT_PUBLIC_CHARGE_VALUE))});
+        toast.success("funds updated");
+      }
       setIsOpen(false);
     } catch (error) {
       console.error(error)
@@ -34,6 +37,8 @@ export default function ChargesAdd({isOpen, setIsOpen, doc}) {
                 <div className="form-control">
                   <label className="label"><span className="label-text">Amount to recharge</span></label>
                   <input className="input input-bordered w-full max-w-xs" type="number" placeholder="Enter Amount" required value={value} onChange={(e) => setValue(e.target.value)}/>
+                  <label htmlFor="funds">Add to funds ?</label>
+                  <input name="funds" type="checkbox" checked={inFunds} onChange={() => setInFunds(!inFunds)} className="checkbox" />
                 </div>
                 <div className="card-actions justify-end mt-3">
                   <button className="btn btn-error" onClick={() => {
