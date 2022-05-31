@@ -7,7 +7,7 @@ export default function Footer() {
   const { theme, setTheme } = useTheme()
 
   return (
-    <div className="flex justify-between items-center">
+    <footer className="flex justify-between items-center">
       <span>
 
         &copy; {new Date().getFullYear()} Matteo Gassend
@@ -22,6 +22,6 @@ export default function Footer() {
 
 
       </div>
-    </div>
+    </footer>
   )
 }
