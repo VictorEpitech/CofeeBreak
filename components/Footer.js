@@ -6,6 +6,7 @@ export default function Footer() {
 
   const { theme, setTheme } = useTheme()
 
+  console.log(theme)
   return (
     <footer className="flex justify-between items-center">
       <span>
