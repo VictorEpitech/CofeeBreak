@@ -33,21 +33,47 @@ export default function DashboardHome() {
       today.setSeconds(0)
       const todayCharge = await client.database.listDocuments(process.env.NEXT_PUBLIC_CONSUME_COLLECTION, [Query.greaterEqual("consumedAt", today.toISOString())], 100)
 
-      const todaySub = client.subscribe(`collections.${process.env.NEXT_PUBLIC_CONSUME_COLLECTION}.documents`, (e) => {
-        if (e.events.includes("collections.*.documents.*.create")) {
-          if (e.payload.consumedAt >= today.toISOString()) {
-            setTodayCharge((c) => c + 1)
-          }
-        }
-      })
+
 
       setTodayCharge(todayCharge?.documents?.reduce((acc, value) => acc + value.consumedItems, 0) ?? 0);
       setTrackedUsers(trackedData.total);
       setLoading(false);
-      return () => todaySub()
     };
     getFunds();
   }, [setLoading]);
+
+  useEffect(() => {
+    const today = new Date();
+    today.setHours(0)
+    today.setMinutes(0)
+    today.setSeconds(0)
+
+    const todaySub = client.subscribe(`collections.${process.env.NEXT_PUBLIC_CONSUME_COLLECTION}.documents`, (e) => {
+      if (e.events.includes(`collections.${process.env.NEXT_PUBLIC_CONSUME_COLLECTION}.documents.*.create`)) {
+        if (e.payload.consumedAt >= today.toISOString()) {
+          setTodayCharge((c) => c + 1)
+        }
+      }
+    })
+
+    const trackedSub = client.subscribe(`collections.${process.env.NEXT_PUBLIC_CONSUME_COLLECTION}.documents`, (e) => {
+      if (e.events.includes(`collections.${process.env.NEXT_PUBLIC_CONSUME_COLLECTION}.documents.*.create`)) {
+        setTrackedUsers((t) => t + 1)
+      }
+    })
+
+    const fundsSub = client.subscribe( `collections.${process.env.NEXT_PUBLIC_FUND_COLLECTION}.documents` ,(e) => {
+      if (e.events.includes(`collections.${process.env.NEXT_PUBLIC_FUND_COLLECTION}.documents.*.create`)) {
+        setFund(e.payload.totalAmount)
+      }
+    })
+
+    return () => {
+      todaySub()
+      trackedSub()
+      fundsSub()
+    }
+  })
 
   return (
     <div className="w-full h-full">

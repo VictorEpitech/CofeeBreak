@@ -19,6 +19,9 @@ export default function DashboardFunds() {
 
   useEffect(() => {
     const getFunds = async () => {
+      if (!router.query?.page) {
+        router.push("/dashboard/funds?page=1", undefined, {shallow:true})
+      }
       setLoading(true)
       const data = await client.database.listDocuments(process.env.NEXT_PUBLIC_FUND_COLLECTION, undefined, 25, router.query.page ? (router.query.page - 1) * 25 : 0, undefined, undefined, ["date"], ["ASC"])
       if (data.total > 25) {

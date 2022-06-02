@@ -15,6 +15,9 @@ export default function Consumes() {
   useEffect(() => {
     const getConsumed = async () => {
       setLoading(true)
+      if (!router.query?.page) {
+        router.push("/dashboard/consumes?page=1", undefined, {shallow:true})
+      }
       const data = await client.database.listDocuments(process.env.NEXT_PUBLIC_CONSUME_COLLECTION, undefined, 25, router.query.page ? (router.query.page - 1) * 25 : 0, undefined, undefined, ["consumedAt"], ["ASC"])
       if (data.total > 25) {
         console.log("should paginate")
@@ -81,7 +84,7 @@ export default function Consumes() {
           onClick={() => {
             router.push(`/dashboard/consumes?page=1`)
           }} 
-          disabled={(router.query?.page || 0) == 1 ?? true}>{"<<"}</button>
+          disabled={(router.query?.page) == 1 ?? true}>{"<<"}</button>
           <button 
           className="btn"
           onClick={() => {
