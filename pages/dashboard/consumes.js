@@ -31,7 +31,7 @@ export default function Consumes() {
   useEffect(() => {
     const subscription = client.subscribe(`collections.${process.env.NEXT_PUBLIC_CONSUME_COLLECTION}.documents`, (e) => {
       console.log(e);
-      if (e.event === "database.documents.update") {
+      if (e.events.includes("collections.*.documents.*.update")) {
         console.log(e.payload)
         setConsumed((old) => {
           let newData = [...old];
@@ -42,7 +42,7 @@ export default function Consumes() {
           return newData
         })
       }
-      if (e.event === "database.documents.create") {
+      if (e.events.includes("collections.*.documents.*.create")) {
         setConsumed((old) => [...old, e.payload])
       }
     });

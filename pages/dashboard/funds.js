@@ -34,7 +34,7 @@ export default function DashboardFunds() {
 
   useEffect(() => {
     const unsub = client.subscribe(`collections.${process.env.NEXT_PUBLIC_FUND_COLLECTION}.documents`, (e) => {
-      if (e.event === "database.documents.delete") {
+      if (e.events.includes("collections.*.documents.*.delete")) {
         setFunds((old) => old.filter((x) => x.$id !== e.payload.$id))
       } else {
         setFunds((old) => [...old, e.payload])

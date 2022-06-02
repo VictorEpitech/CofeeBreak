@@ -29,8 +29,7 @@ export default function Credits() {
 
   useEffect(() => {
     const subscription = client.subscribe(`collections.${process.env.NEXT_PUBLIC_CREDIT_COLLECTION}.documents`, (e) => {
-      console.log(e);
-      if (e.event === "database.documents.update") {
+      if (e.events.includes("collections.*.documents.*.update")) {
         console.log(e.payload)
         setCharges((old) => {
           let newData = [...old];
