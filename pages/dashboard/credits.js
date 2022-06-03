@@ -4,6 +4,7 @@ import { useSetRecoilState } from "recoil";
 import ChargesAdd from "../../components/CreditsAdd";
 import loadingAtom from "../../context/atoms/loadingAtom";
 import { client } from "../../utils/client";
+import Pagination from "../../components/Pagination";
 
 export default function Credits() {
   const [charges, setCharges] = useState([]);
@@ -106,58 +107,11 @@ export default function Credits() {
             </table>
           </>
         )}
-        <div className="w-full flex justify-center">
-          <div className="btn-group">
-            <button
-              className="btn"
-              onClick={() => {
-                router.push(`/dashboard/credits?page=1`);
-              }}
-              disabled={router.query?.page == 1 ?? true}
-            >
-              {"<<"}
-            </button>
-            <button
-              className="btn"
-              onClick={() => {
-                router.push(
-                  `/dashboard/credits?page=${parseInt(router.query?.page) - 1}`
-                );
-              }}
-              disabled={router.query?.page < 2 ?? true}
-            >
-              {"<"}
-            </button>
-            <button className="btn btn-active">
-              {router.query?.page || 1}
-            </button>
-            <button
-              className="btn"
-              onClick={() => {
-                router.push(
-                  `/dashboard/credits?page=${
-                    (parseInt(router.query.page) || 1) + 1
-                  }`
-                );
-              }}
-              disabled={router.query?.page == totalPages}
-            >
-              {">"}
-            </button>
-            <button
-              className="btn"
-              disabled={router.query?.page == totalPages}
-              onClick={() => {
-                router.push(
-                  `/dashboard/consumes?page=${totalPages}`,
-                  undefined
-                );
-              }}
-            >
-              {">>"}
-            </button>
-          </div>
-        </div>
+        <Pagination
+          totalPages={totalPages}
+          router={router}
+          url="/dashboard/credits"
+        ></Pagination>
       </div>
     </>
   );
