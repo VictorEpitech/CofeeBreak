@@ -1,7 +1,6 @@
 import Link from "next/link"
 import { useRecoilValue } from "recoil"
 import userAtom from "../context/atoms/userAtom"
-import User from "../icons/user"
 
 export default function Header() {
   const user = useRecoilValue(userAtom)

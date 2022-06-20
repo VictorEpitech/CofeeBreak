@@ -1,15 +1,20 @@
-import { useRouter } from "next/router"
-import { useEffect } from "react"
-import toast from "react-hot-toast"
-import { useRecoilState } from "recoil"
-import userAtom from "../context/atoms/userAtom"
-import { client, login } from "../utils/client"
+/* eslint-disable @next/next/no-img-element */
+import { login } from "../utils/client";
 
 export default function Home() {
   return (
-    <div className="flex flex-col justify-center items-center w-full h-full">
-      <h1 className="text-3xl font-bold mb-4">CoffeBreak Moulins</h1>
-      <button className="btn btn-primary" onClick={() => login()}>Sign In</button>
-    </div>
-  )
+      <div className="flex justify-evenly gap-5">
+          <img
+            src="/coffee2.jpg"
+            alt="coffee"
+            className="h-auto w-2/3 rounded-lg shadow-md"
+          />
+        <div className="w-1/3 flex flex-col justify-center">
+          <h2 className="text-xl font-bold text-center">
+            Coffee Break
+          </h2>
+          <button onClick={login} className="btn btn-primary m-4">Sign In</button>
+        </div>
+      </div>
+  );
 }
