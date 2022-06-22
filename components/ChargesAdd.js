@@ -36,7 +36,7 @@ export default function ChargesAdd({isOpen, setIsOpen, doc}) {
               <form onSubmit={handleSubmit}>
                 <div className="form-control">
                   <label className="label"><span className="label-text">Amount to recharge</span></label>
-                  <input className="input input-bordered w-full max-w-xs" type="number" placeholder="Enter Amount" required value={value} onChange={(e) => setValue(e.target.value)}/>
+                  <input min={1} className="input input-bordered w-full max-w-xs" type="number" placeholder="Enter Amount" required value={value} onChange={(e) => setValue(e.target.value)}/>
                   <label htmlFor="funds">Add to funds ?</label>
                   <input name="funds" type="checkbox" checked={inFunds} onChange={() => setInFunds(!inFunds)} className="checkbox" />
                 </div>

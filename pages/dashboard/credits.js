@@ -1,7 +1,7 @@
 import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
 import { useSetRecoilState } from "recoil";
-import ChargesAdd from "../../components/CreditsAdd";
+import ChargesAdd from "../../components/ChargesAdd";
 import loadingAtom from "../../context/atoms/loadingAtom";
 import { client } from "../../utils/client";
 import Pagination from "../../components/Pagination";
