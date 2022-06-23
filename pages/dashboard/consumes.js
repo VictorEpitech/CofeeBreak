@@ -26,7 +26,7 @@ export default function Consumes() {
         undefined,
         undefined,
         ["consumedAt"],
-        ["ASC"]
+        ["DESC"]
       );
       if (data.total > 25) {
         console.log("should paginate");
