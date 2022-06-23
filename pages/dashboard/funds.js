@@ -32,7 +32,7 @@ export default function DashboardFunds() {
         undefined,
         undefined,
         ["date"],
-        ["ASC"]
+        ["DESC"]
       );
       if (data.total > 25) {
         console.log("should paginate");
@@ -104,7 +104,7 @@ export default function DashboardFunds() {
                     <td>{payMethods.find((p) => p.$id === e.method)?.name}</td>
                     <td>{e.totalAmount}</td>
                     <td>
-                      {idx === funds.length - 1 &&
+                      {idx === 0 &&
                         (router.query?.page == totalPages ||
                           totalPages === 1) && (
                           <button
