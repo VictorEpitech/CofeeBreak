@@ -1,6 +1,7 @@
 import { Query } from "appwrite";
 import { useState, useEffect } from "react";
 import { useSetRecoilState } from "recoil";
+import StatBlock from "../../components/StatBlock";
 import loadingAtom from "../../context/atoms/loadingAtom";
 import { client } from "../../utils/client";
 
@@ -79,22 +80,13 @@ export default function DashboardHome() {
     <div className="w-full h-full">
       <div className="w-full flex justify-evenly">
         <div className="stats shadow-xl">
-          <div className="stat">
-            <div className="stat-title">Funds</div>
-            <div className={`stat-value`}>{fund.toFixed(2)}</div>
-          </div>
+          <StatBlock title={"Funds"} value={fund} />
         </div>
         <div className="stats shadow-xl">
-          <div className="stat">
-            <div className="stat-title">Tracked Users</div>
-            <div className={`stat-value`}>{trackedUsers}</div>
-          </div>
+          <StatBlock value={trackedUsers} title="Tracked Users" />
         </div>
         <div className="stats shadow-xl">
-          <div className="stat">
-            <div className="stat-title">Cofees Consumed Today</div>
-            <div className={`stat-value`}>{todayCharge}</div>
-          </div>
+          <StatBlock value={todayCharge} title="Consumed Today" />
         </div>
       </div>
     </div>
