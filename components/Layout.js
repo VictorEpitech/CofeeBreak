@@ -42,7 +42,7 @@ export default function Layout({children}) {
       getUser()
       getPayMethods()
     }
-  }, [router, setUser])
+  }, [router, setPayMethods, setUser])
 
   return (
     <div id="root" className="relative">

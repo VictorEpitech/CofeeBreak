@@ -1,33 +1,26 @@
 import { Query } from "appwrite";
 import { useState, useEffect } from "react";
-import { useSetRecoilState } from "recoil";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import StatBlock from "../../components/StatBlock";
 import loadingAtom from "../../context/atoms/loadingAtom";
+import payMethodsAtom from "../../context/atoms/payMethods";
 import { client } from "../../utils/client";
 
 export default function DashboardHome() {
-  const [fund, setFund] = useState(0);
+  const [fundCash, setFundCash] = useState(0);
+  const [fundLydia, setFundLydia] = useState(0);
   const [trackedUsers, setTrackedUsers] = useState(0);
   const [todayCharge, setTodayCharge] = useState(0);
   const setLoading = useSetRecoilState(loadingAtom);
+  const payMethods = useRecoilValue(payMethodsAtom);
+
 
   useEffect(() => {
     const getFunds = async () => {
       setLoading(true);
-      const fundData = await client.database.listDocuments(
-        process.env.NEXT_PUBLIC_FUND_COLLECTION,
-        undefined,
-        1,
-        undefined,
-        undefined,
-        undefined,
-        ["date"],
-        ["DESC"]
-      );
+
       const trackedData = await client.database.listDocuments(process.env.NEXT_PUBLIC_CREDIT_COLLECTION)
-      if (fundData.documents.length > 0) {
-        setFund(fundData.documents[0].totalAmount);
-      }
+
       const today = new Date();
       today.setHours(0)
       today.setMinutes(0)
@@ -42,6 +35,31 @@ export default function DashboardHome() {
     };
     getFunds();
   }, [setLoading]);
+
+  useEffect(() => {
+    const getMoney = async() => {
+      const fundData = await client.database.listDocuments(
+        process.env.NEXT_PUBLIC_FUND_COLLECTION,
+        undefined,
+        100,
+        undefined,
+        undefined,
+        undefined,
+        ["date"],
+        ["DESC"]
+      );
+      if (fundData.documents.length > 0) {
+        const cashId = payMethods.find((e) => e.name === "cash")
+        setFundCash(fundData.documents.filter((e) => e.method === cashId.$id).reduce((acc, prev) => acc + prev.amount, 0));
+        const lydiaId = payMethods.find((e) => e.name === "lydia")
+        setFundLydia(fundData.documents.filter((e) => e.method === lydiaId.$id).reduce((acc, prev) => acc + prev.amount, 0))
+      }
+    }
+
+    if (payMethods.length > 0) {
+      getMoney()
+    }
+  }, [payMethods])
 
   useEffect(() => {
     const today = new Date();
@@ -80,7 +98,8 @@ export default function DashboardHome() {
     <div className="w-full h-full">
       <div className="w-full flex justify-evenly">
         <div className="stats shadow-xl">
-          <StatBlock title={"Funds"} value={fund} />
+          <StatBlock title="Cash" value={fundCash} />
+          <StatBlock title="Lydia" value={fundLydia} />
         </div>
         <div className="stats shadow-xl">
           <StatBlock value={trackedUsers} title="Tracked Users" />
