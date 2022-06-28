@@ -27,6 +27,9 @@ export default function ChargesAdd({isOpen, setIsOpen, doc}) {
           await client.database.createDocument(process.env.NEXT_PUBLIC_FUND_COLLECTION, "unique()", {amount: value * parseFloat(process.env.NEXT_PUBLIC_CHARGE_VALUE), reason: `${doc.email} recharge` || null, date: new Date().toISOString(), totalAmount: (latestFund.documents[0]?.totalAmount ?? 0) + (value * parseFloat(process.env.NEXT_PUBLIC_CHARGE_VALUE)), method: payment});
           toast.success("funds updated");
       }
+      setValue(0)
+      setInFunds(true)
+      setPayment(undefined);
       setIsOpen(false);
     } catch (error) {
       console.error(error)
