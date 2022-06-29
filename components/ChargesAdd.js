@@ -2,7 +2,7 @@ import {useState} from "react"
 import toast from "react-hot-toast";
 import { useRecoilValue } from "recoil";
 import payMethodsAtom from "../context/atoms/payMethods";
-import { client } from "../utils/client";
+import { client, database } from "../utils/client";
 
 export default function ChargesAdd({isOpen, setIsOpen, doc}) {
   const [value, setValue] = useState(0)
@@ -20,11 +20,11 @@ export default function ChargesAdd({isOpen, setIsOpen, doc}) {
         toast.error("please choose pay method");
         return;
       }
-      await client.database.updateDocument(process.env.NEXT_PUBLIC_CREDIT_COLLECTION, doc["$id"], {email:  doc.email, charges: total});
+      await database.updateDocument(process.env.NEXT_PUBLIC_CREDIT_COLLECTION, doc["$id"], {email:  doc.email, charges: total});
       toast.success("charges updated")
       if (inFunds) {
-          const latestFund = await client.database.listDocuments(process.env.NEXT_PUBLIC_FUND_COLLECTION, undefined, 1, undefined, undefined, undefined, ["date"], ["DESC"]);
-          await client.database.createDocument(process.env.NEXT_PUBLIC_FUND_COLLECTION, "unique()", {amount: value * parseFloat(process.env.NEXT_PUBLIC_CHARGE_VALUE), reason: `${doc.email} recharge` || null, date: new Date().toISOString(), totalAmount: (latestFund.documents[0]?.totalAmount ?? 0) + (value * parseFloat(process.env.NEXT_PUBLIC_CHARGE_VALUE)), method: payment});
+          const latestFund = await database.listDocuments(process.env.NEXT_PUBLIC_FUND_COLLECTION, undefined, 1, undefined, undefined, undefined, ["date"], ["DESC"]);
+          await database.createDocument(process.env.NEXT_PUBLIC_FUND_COLLECTION, "unique()", {amount: value * parseFloat(process.env.NEXT_PUBLIC_CHARGE_VALUE), reason: `${doc.email} recharge` || null, date: new Date().toISOString(), totalAmount: (latestFund.documents[0]?.totalAmount ?? 0) + (value * parseFloat(process.env.NEXT_PUBLIC_CHARGE_VALUE)), method: payment});
           toast.success("funds updated");
       }
       setValue(0)

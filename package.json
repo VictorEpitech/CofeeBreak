@@ -9,7 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "appwrite": "^8.0.1",
+    "appwrite": "^9.0.0",
     "daisyui": "^2.13.6",
     "dayjs": "^1.11.3",
     "next": "12.1.4",

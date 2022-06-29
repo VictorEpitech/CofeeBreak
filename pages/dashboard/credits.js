@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { useSetRecoilState } from "recoil";
 import ChargesAdd from "../../components/ChargesAdd";
 import loadingAtom from "../../context/atoms/loadingAtom";
-import { client } from "../../utils/client";
+import { client, database } from "../../utils/client";
 import Pagination from "../../components/Pagination";
 
 export default function Credits() {
@@ -20,7 +20,7 @@ export default function Credits() {
         router.push("/dashboard/credits?page=1", undefined, { shallow: true });
       }
       setLoading(true);
-      const data = await client.database.listDocuments(
+      const data = await database.listDocuments(
         process.env.NEXT_PUBLIC_CREDIT_COLLECTION,
         undefined,
         25,

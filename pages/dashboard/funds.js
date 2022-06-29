@@ -7,7 +7,7 @@ import Pagination from "../../components/Pagination";
 import loadingAtom from "../../context/atoms/loadingAtom";
 import payMethodsAtom from "../../context/atoms/payMethods";
 import Trash from "../../icons/trash";
-import { client } from "../../utils/client";
+import { client, database } from "../../utils/client";
 
 export default function DashboardFunds() {
   const [funds, setFunds] = useState([]);
@@ -24,7 +24,7 @@ export default function DashboardFunds() {
         router.push("/dashboard/funds?page=1", undefined, { shallow: true });
       }
       setLoading(true);
-      const data = await client.database.listDocuments(
+      const data = await database.listDocuments(
         process.env.NEXT_PUBLIC_FUND_COLLECTION,
         undefined,
         25,
@@ -110,7 +110,7 @@ export default function DashboardFunds() {
                           <button
                             className="btn btn-warning"
                             onClick={async () => {
-                              await client.database.deleteDocument(
+                              await database.deleteDocument(
                                 process.env.NEXT_PUBLIC_FUND_COLLECTION,
                                 e.$id
                               );

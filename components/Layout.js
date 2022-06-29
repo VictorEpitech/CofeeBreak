@@ -5,7 +5,7 @@ import { useRecoilState, useRecoilValue } from "recoil";
 import loadingAtom from "../context/atoms/loadingAtom";
 import payMethodsAtom from "../context/atoms/payMethods";
 import userAtom from "../context/atoms/userAtom";
-import { client } from "../utils/client";
+import { account, client, database } from "../utils/client";
 import Footer from "./Footer";
 import Header from "./Header";
 
@@ -19,7 +19,7 @@ export default function Layout({children}) {
   useEffect(() => {
     const getUser = async() => {
       try {
-        const u = await client.account.get()
+        const u = await account.get()
         setUser(u)
       } catch (error) {
         toast.error("could not authenticate you, please sign in again")
@@ -28,7 +28,7 @@ export default function Layout({children}) {
     }
     const getPayMethods = async() => {
       try {
-        const res = await client.database.listDocuments(process.env.NEXT_PUBLIC_PAYMENT_COLLECTION);
+        const res = await database.listDocuments(process.env.NEXT_PUBLIC_PAYMENT_COLLECTION);
         if (res.documents.length > 0) {
           setPayMethods(res.documents);
         }

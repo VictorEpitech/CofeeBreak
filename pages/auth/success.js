@@ -3,7 +3,7 @@ import { useEffect } from "react"
 import toast from "react-hot-toast"
 import { useRecoilState } from "recoil"
 import userAtom from "../../context/atoms/userAtom"
-import { client } from "../../utils/client"
+import { client, account } from "../../utils/client"
 
 
 export default function SuccessAuth() {
@@ -12,7 +12,7 @@ export default function SuccessAuth() {
   useEffect(() => {
     const getUser = async() => {
       try {
-        const u = await client.account.get()
+        const u = await account.get()
         setUser(u)
         router.push("/dashboard")
       } catch (error) {

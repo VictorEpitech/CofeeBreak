@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { useSetRecoilState } from "recoil";
 import loadingAtom from "../../context/atoms/loadingAtom";
-import { client } from "../../utils/client";
+import { client, database } from "../../utils/client";
 import Pagination from "../../components/Pagination";
 
 export default function Consumes() {
@@ -18,7 +18,7 @@ export default function Consumes() {
       if (!router.query?.page) {
         router.push("/dashboard/consumes?page=1", undefined, { shallow: true });
       }
-      const data = await client.database.listDocuments(
+      const data = await database.listDocuments(
         process.env.NEXT_PUBLIC_CONSUME_COLLECTION,
         undefined,
         25,

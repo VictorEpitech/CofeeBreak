@@ -2,7 +2,7 @@ import {useState} from "react"
 import toast from "react-hot-toast"
 import { useRecoilValue } from "recoil"
 import payMethodsAtom from "../context/atoms/payMethods"
-import { client } from "../utils/client"
+import { client, database } from "../utils/client"
 
 export default function FundsAdd({isOpen, setIsOpen, latestAmount}) {
 
@@ -19,7 +19,7 @@ export default function FundsAdd({isOpen, setIsOpen, latestAmount}) {
       return;
     }
     try {
-      await client.database.createDocument(process.env.NEXT_PUBLIC_FUND_COLLECTION, "unique()", {amount: value, reason: reason || null, date: new Date().toISOString(), totalAmount: total, method: payment})
+      await database.createDocument(process.env.NEXT_PUBLIC_FUND_COLLECTION, "unique()", {amount: value, reason: reason || null, date: new Date().toISOString(), totalAmount: total, method: payment})
       toast.success("funds updated")
       setIsOpen(false);
       setValue(0)

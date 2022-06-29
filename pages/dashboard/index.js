@@ -5,7 +5,7 @@ import FundGraph from "../../components/dashboard/index/FundGraph";
 import StatBlock from "../../components/StatBlock";
 import loadingAtom from "../../context/atoms/loadingAtom";
 import payMethodsAtom from "../../context/atoms/payMethods";
-import { client } from "../../utils/client";
+import { client, database } from "../../utils/client";
 
 export default function DashboardHome() {
   const [fundCash, setFundCash] = useState(0);
@@ -20,13 +20,13 @@ export default function DashboardHome() {
     const getFunds = async () => {
       setLoading(true);
 
-      const trackedData = await client.database.listDocuments(process.env.NEXT_PUBLIC_CREDIT_COLLECTION)
+      const trackedData = await database.listDocuments(process.env.NEXT_PUBLIC_CREDIT_COLLECTION)
 
       const today = new Date();
       today.setHours(0)
       today.setMinutes(0)
       today.setSeconds(0)
-      const todayCharge = await client.database.listDocuments(process.env.NEXT_PUBLIC_CONSUME_COLLECTION, [Query.greaterEqual("consumedAt", today.toISOString())], 100)
+      const todayCharge = await database.listDocuments(process.env.NEXT_PUBLIC_CONSUME_COLLECTION, [Query.greaterEqual("consumedAt", today.toISOString())], 100)
 
 
 
@@ -39,7 +39,7 @@ export default function DashboardHome() {
 
   useEffect(() => {
     const getMoney = async() => {
-      const fundData = await client.database.listDocuments(
+      const fundData = await database.listDocuments(
         process.env.NEXT_PUBLIC_FUND_COLLECTION,
         undefined,
         100,

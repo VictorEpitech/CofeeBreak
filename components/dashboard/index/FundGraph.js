@@ -1,7 +1,7 @@
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 import { Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
-import { client } from "../../../utils/client";
+import { client, database } from "../../../utils/client";
 
 export default function FundGraph() {
   const [data, setData] = useState([]);
@@ -12,7 +12,7 @@ export default function FundGraph() {
     const getData = async () => {
       const tmp = [];
       while (true) {
-        const d = await client.database.listDocuments(
+        const d = await database.listDocuments(
           process.env.NEXT_PUBLIC_FUND_COLLECTION,
           undefined,
           100,
