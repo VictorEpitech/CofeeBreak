@@ -43,7 +43,7 @@ export default function Consumes() {
 
   useEffect(() => {
     const subscription = client.subscribe(
-      `collections.${process.env.NEXT_PUBLIC_CONSUME_COLLECTION}.documents`,
+      `databases.default.collections.${process.env.NEXT_PUBLIC_CONSUME_COLLECTION}.documents`,
       (e) => {
         console.log(e);
         if (e.events.includes("collections.*.documents.*.update")) {

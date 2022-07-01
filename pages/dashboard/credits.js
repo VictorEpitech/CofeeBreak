@@ -42,7 +42,7 @@ export default function Credits() {
 
   useEffect(() => {
     const subscription = client.subscribe(
-      `collections.${process.env.NEXT_PUBLIC_CREDIT_COLLECTION}.documents`,
+      `databases.default.collections.${process.env.NEXT_PUBLIC_CREDIT_COLLECTION}.documents`,
       (e) => {
         if (e.events.includes("collections.*.documents.*.update")) {
           console.log(e.payload);
