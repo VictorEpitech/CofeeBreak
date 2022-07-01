@@ -1,6 +1,7 @@
 import { Query } from "appwrite";
 import { useState, useEffect } from "react";
 import { useRecoilValue, useSetRecoilState } from "recoil";
+import ConsumeGraph from "../../components/dashboard/index/ConsumeGraph";
 import FundGraph from "../../components/dashboard/index/FundGraph";
 import StatBlock from "../../components/StatBlock";
 import loadingAtom from "../../context/atoms/loadingAtom";
@@ -114,6 +115,12 @@ export default function DashboardHome() {
           <div className="card-body">
             <h2 className="card-title">Funds Evolution</h2>
             <FundGraph />
+          </div>
+        </div>
+        <div className="card bg-base-100 shadow-xl w-full">
+          <div className="card-body">
+            <h2 className="card-title">Sales Evolution</h2>
+            <ConsumeGraph />
           </div>
         </div>
       </div>
