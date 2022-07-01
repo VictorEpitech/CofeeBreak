@@ -48,7 +48,34 @@ export default function ConsumeGraph() {
       setData(tmp);
       setLoading(false)
     };
-    if (data.length === 0) getData();
+    if (data.length === 0) {
+      getData()
+      client.subscribe(`databases.default.collections.${process.env.NEXT_PUBLIC_CONSUME_COLLECTION}.documents`, (payload) => {
+        if (payload.events.includes(`databases.default.collections.${process.env.NEXT_PUBLIC_CONSUME_COLLECTION}.documents.*.create`)) {
+          setData(old => {
+            const tmp = [...old]
+            const day = new dayjs(payload.payload.consumedAt)
+            const dayIndex = tmp.findIndex((e) => day.isSame(e.consumedAt, "day"))
+            if (dayIndex !== -1) {
+              tmp[dayIndex]["consumedItems"] += payload.payload.consumedItems
+            } else {
+              tmp.push(payload.payload)
+            }
+            return tmp;
+          })
+        } else if (payload.events.includes(`databases.default.collections.${process.env.NEXT_PUBLIC_CONSUME_COLLECTION}.documents.*.delete`)) {
+          setData(old => {
+            const tmp = [...old]
+            const day = new dayjs(payload.payload.consumedAt)
+            const dayIndex = tmp.findIndex((e) => day.isSame(e.consumedAt, "day"))
+            if (dayIndex !== -1) {
+              tmp[dayIndex]["consumedItems"] -= payload.payload.consumedItems
+            }
+            return tmp;
+          })
+        }
+      })
+    };
   }, [data]);
 
   if (loading) {
