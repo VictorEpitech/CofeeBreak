@@ -98,19 +98,15 @@ export default function DashboardHome() {
 
   return (
     <div className="w-full h-full">
-      <div className="w-full flex justify-evenly">
-        <div className="stats shadow-xl">
+      <div className="flex justify-center">
+        <div className=" stats stats-vertical lg:stats-horizontal shadow-xl">
           <StatBlock title="Cash" value={fundCash} />
           <StatBlock title="Lydia" value={fundLydia} />
-        </div>
-        <div className="stats shadow-xl">
           <StatBlock value={trackedUsers} title="Tracked Users" />
-        </div>
-        <div className="stats shadow-xl">
           <StatBlock value={todayCharge} title="Consumed Today" />
         </div>
       </div>
-      <div className="w-full flex justify-evenly space-x-4 mt-4">
+      <div className="w-full flex flex-col lg:flex-row justify-evenly lg:space-x-4 mt-4">
         <div className="card bg-base-100 shadow-xl w-full">
           <div className="card-body">
             <h2 className="card-title">Funds Evolution</h2>
