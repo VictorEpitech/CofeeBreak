@@ -14,7 +14,7 @@ export default function Header() {
           user !== null &&
           <> 
             <div className="navbar-end">
-            <ul className="menu menu-horizontal rounded-box">
+            <ul className="menu menu-vertical lg:menu-horizontal rounded-box">
               <li><Link href="/dashboard/funds">Funds</Link></li>
               <li><Link href="/dashboard/credits">Credits</Link></li>
               <li><Link href="/dashboard/consumes">Consume</Link></li>

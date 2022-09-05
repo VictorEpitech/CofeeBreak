@@ -5,6 +5,7 @@ import ChargesAdd from "../../components/ChargesAdd";
 import loadingAtom from "../../context/atoms/loadingAtom";
 import { client, database } from "../../utils/client";
 import Pagination from "../../components/Pagination";
+import toast from "react-hot-toast";
 
 export default function Credits() {
   const [charges, setCharges] = useState([]);
@@ -88,9 +89,9 @@ export default function Credits() {
               <tbody>
                 {charges.map((e) => (
                   <tr key={e.$id}>
-                    <th>{e.email}</th>
-                    <th>{e.charges}</th>
-                    <th>
+                    <td>{e.email}</td>
+                    <td>{e.charges}</td>
+                    <td className=" space-x-4">
                       <button
                         className="btn btn-primary"
                         onClick={async () => {
@@ -100,7 +101,21 @@ export default function Credits() {
                       >
                         <span className="uppercase">recharge</span>
                       </button>
-                    </th>
+                      <button className="btn btn-secondary" onClick={async () => {
+                        const toastId = toast.loading("removing one charge")
+                        await database.updateDocument(process.env.NEXT_PUBLIC_CREDIT_COLLECTION, e.$id, {
+                          charges: e.charges - 1
+                        })
+                        await database.createDocument(process.env.NEXT_PUBLIC_CONSUME_COLLECTION, "unique()", {
+                          consumedAt: new Date().toISOString(),
+                          email: e.email,
+                          consumedItems: 1
+                        })
+                        toast.success("charges updated", { id: toastId })
+                      }}>
+                        <span className="uppercase">remove 1 credit</span>
+                      </button>
+                    </td>
                   </tr>
                 ))}
               </tbody>

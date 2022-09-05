@@ -2,6 +2,7 @@ import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { useRecoilValue, useSetRecoilState } from "recoil";
+import Swal from "sweetalert2";
 import FundsAdd from "../../components/FundsAdd";
 import Pagination from "../../components/Pagination";
 import loadingAtom from "../../context/atoms/loadingAtom";
@@ -110,11 +111,20 @@ export default function DashboardFunds() {
                           <button
                             className="btn btn-warning"
                             onClick={async () => {
-                              await database.deleteDocument(
-                                process.env.NEXT_PUBLIC_FUND_COLLECTION,
-                                e.$id
-                              );
-                              toast.success("deleted document");
+                              const response = await Swal.fire({
+                                title:"Are you sure?",
+                                text:"You are about to delete this record",
+                                showCancelButton: true,
+                                confirmButtonText: "Yes"
+                              })
+                              if (response.isConfirmed) {
+                                const toastId  = toast.loading("deleting document")
+                                await database.deleteDocument(
+                                  process.env.NEXT_PUBLIC_FUND_COLLECTION,
+                                  e.$id
+                                );
+                                toast.success("deleted document", {id:toastId});
+                              }
                             }}
                           >
                             <Trash />
