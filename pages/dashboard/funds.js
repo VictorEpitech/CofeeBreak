@@ -72,7 +72,7 @@ export default function DashboardFunds() {
       <FundsAdd
         isOpen={showModal}
         setIsOpen={setShowModal}
-        latestAmount={funds[funds.length - 1]?.totalAmount || 0}
+        latestAmount={funds[0]?.totalAmount || 0}
       />
       {(router.query?.page ?? 1) == totalPages && (
         <button
@@ -112,18 +112,21 @@ export default function DashboardFunds() {
                             className="btn btn-warning"
                             onClick={async () => {
                               const response = await Swal.fire({
-                                title:"Are you sure?",
-                                text:"You are about to delete this record",
+                                title: "Are you sure?",
+                                text: "You are about to delete this record",
                                 showCancelButton: true,
-                                confirmButtonText: "Yes"
-                              })
+                                confirmButtonText: "Yes",
+                              });
                               if (response.isConfirmed) {
-                                const toastId  = toast.loading("deleting document")
+                                const toastId =
+                                  toast.loading("deleting document");
                                 await database.deleteDocument(
                                   process.env.NEXT_PUBLIC_FUND_COLLECTION,
                                   e.$id
                                 );
-                                toast.success("deleted document", {id:toastId});
+                                toast.success("deleted document", {
+                                  id: toastId,
+                                });
                               }
                             }}
                           >
