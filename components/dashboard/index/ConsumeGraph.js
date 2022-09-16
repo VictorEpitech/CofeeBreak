@@ -1,3 +1,4 @@
+import { Query } from "appwrite";
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 import {
@@ -16,66 +17,85 @@ export default function ConsumeGraph() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    let offset = 0;
-    let count = 0;
     const getData = async () => {
+      let count = 0;
+      let offset = 0;
       const tmp = [];
-      while (true) {
-        const d = await database.listDocuments(
-          process.env.NEXT_PUBLIC_CONSUME_COLLECTION,
-          undefined,
-          100,
-          100 * offset,
-          undefined,
-          undefined,
-          ["consumedAt"],
-          ["ASC"]
-        );
-        count += d.documents.length;
-        d.documents.forEach((element) => {
-          if (
-            tmp.length > 0 &&
-            new dayjs(element.consumedAt).isSame(tmp[tmp.length - 1]["consumedAt"], "day")
-          ) {
-            tmp[tmp.length - 1]["consumedItems"] += element.consumedItems
-          } else {
-            tmp.push(element);
-          }
-        });
-        if (count === d.total) break;
-        offset += 1;
+      if (data.length === 0) {
+        while (true) {
+          const d = await database.listDocuments(
+            "default",
+            process.env.NEXT_PUBLIC_CONSUME_COLLECTION,
+            [
+              Query.offset(100 * offset),
+              Query.limit(100),
+              Query.orderAsc("consumedAt"),
+            ]
+          );
+          count += d.documents.length;
+          d.documents.forEach((element) => {
+            if (
+              tmp.length > 0 &&
+              new dayjs(element.consumedAt).isSame(
+                tmp[tmp.length - 1]["consumedAt"],
+                "day"
+              )
+            ) {
+              tmp[tmp.length - 1]["consumedItems"] += element.consumedItems;
+            } else {
+              tmp.push(element);
+            }
+          });
+          if (count === d.total) break;
+          offset += 1;
+        }
       }
       setData(tmp);
-      setLoading(false)
+      setLoading(false);
     };
     if (data.length === 0) {
-      getData()
-      client.subscribe(`databases.default.collections.${process.env.NEXT_PUBLIC_CONSUME_COLLECTION}.documents`, (payload) => {
-        if (payload.events.includes(`databases.default.collections.${process.env.NEXT_PUBLIC_CONSUME_COLLECTION}.documents.*.create`)) {
-          setData(old => {
-            const tmp = [...old]
-            const day = new dayjs(payload.payload.consumedAt)
-            const dayIndex = tmp.findIndex((e) => day.isSame(e.consumedAt, "day"))
-            if (dayIndex !== -1) {
-              tmp[dayIndex]["consumedItems"] += payload.payload.consumedItems
-            } else {
-              tmp.push(payload.payload)
-            }
-            return tmp;
-          })
-        } else if (payload.events.includes(`databases.default.collections.${process.env.NEXT_PUBLIC_CONSUME_COLLECTION}.documents.*.delete`)) {
-          setData(old => {
-            const tmp = [...old]
-            const day = new dayjs(payload.payload.consumedAt)
-            const dayIndex = tmp.findIndex((e) => day.isSame(e.consumedAt, "day"))
-            if (dayIndex !== -1) {
-              tmp[dayIndex]["consumedItems"] -= payload.payload.consumedItems
-            }
-            return tmp;
-          })
+      getData();
+      client.subscribe(
+        `databases.default.collections.${process.env.NEXT_PUBLIC_CONSUME_COLLECTION}.documents`,
+        (payload) => {
+          if (
+            payload.events.includes(
+              `databases.default.collections.${process.env.NEXT_PUBLIC_CONSUME_COLLECTION}.documents.*.create`
+            )
+          ) {
+            setData((old) => {
+              const tmp = [...old];
+              const day = new dayjs(payload.payload.consumedAt);
+              const dayIndex = tmp.findIndex((e) =>
+                day.isSame(e.consumedAt, "day")
+              );
+              if (dayIndex !== -1) {
+                tmp[dayIndex]["consumedItems"] += payload.payload.consumedItems;
+              } else {
+                tmp.push(payload.payload);
+              }
+              return tmp;
+            });
+          } else if (
+            payload.events.includes(
+              `databases.default.collections.${process.env.NEXT_PUBLIC_CONSUME_COLLECTION}.documents.*.delete`
+            )
+          ) {
+            setData((old) => {
+              const tmp = [...old];
+              const day = new dayjs(payload.payload.consumedAt);
+              const dayIndex = tmp.findIndex((e) =>
+                day.isSame(e.consumedAt, "day")
+              );
+              if (dayIndex !== -1) {
+                tmp[dayIndex]["consumedItems"] -= payload.payload.consumedItems;
+              }
+              return tmp;
+            });
+          }
         }
-      })
-    };
+      );
+    }
   }, [data]);
 
   if (loading) {

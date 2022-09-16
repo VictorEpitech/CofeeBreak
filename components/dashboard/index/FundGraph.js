@@ -22,6 +22,7 @@ export default function FundGraph() {
       const tmp = [];
       while (true) {
         const d = await database.listDocuments(
+          "default",
           process.env.NEXT_PUBLIC_FUND_COLLECTION,
           undefined,
           100,
@@ -47,7 +48,7 @@ export default function FundGraph() {
         offset += 1;
       }
       setData(tmp);
-      setLoading(false)
+      setLoading(false);
     };
     if (data.length === 0) getData();
   }, [data]);

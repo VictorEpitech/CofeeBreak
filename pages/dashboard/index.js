@@ -16,22 +16,34 @@ export default function DashboardHome() {
   const setLoading = useSetRecoilState(loadingAtom);
   const payMethods = useRecoilValue(payMethodsAtom);
 
-
   useEffect(() => {
     const getFunds = async () => {
       setLoading(true);
 
-      const trackedData = await database.listDocuments(process.env.NEXT_PUBLIC_CREDIT_COLLECTION)
+      const trackedData = await database.listDocuments(
+        "default",
+        process.env.NEXT_PUBLIC_CREDIT_COLLECTION
+      );
 
       const today = new Date();
-      today.setHours(0)
-      today.setMinutes(0)
-      today.setSeconds(0)
-      const todayCharge = await database.listDocuments(process.env.NEXT_PUBLIC_CONSUME_COLLECTION, [Query.greaterEqual("consumedAt", today.toISOString())], 100)
+      today.setHours(0);
+      today.setMinutes(0);
+      today.setSeconds(0);
+      const todayCharge = await database.listDocuments(
+        "default",
+        process.env.NEXT_PUBLIC_CONSUME_COLLECTION,
+        [
+          Query.greaterThanEqual("consumedAt", today.toISOString()),
+          Query.limit(100),
+        ]
+      );
 
-
-
-      setTodayCharge(todayCharge?.documents?.reduce((acc, value) => acc + value.consumedItems, 0) ?? 0);
+      setTodayCharge(
+        todayCharge?.documents?.reduce(
+          (acc, value) => acc + value.consumedItems,
+          0
+        ) ?? 0
+      );
       setTrackedUsers(trackedData.total);
       setLoading(false);
     };
@@ -39,8 +51,9 @@ export default function DashboardHome() {
   }, [setLoading]);
 
   useEffect(() => {
-    const getMoney = async() => {
+    const getMoney = async () => {
       const fundData = await database.listDocuments(
+        "default",
         process.env.NEXT_PUBLIC_FUND_COLLECTION,
         undefined,
         100,
@@ -51,50 +64,79 @@ export default function DashboardHome() {
         ["DESC"]
       );
       if (fundData.documents.length > 0) {
-        const cashId = payMethods.find((e) => e.name === "cash")
-        setFundCash(fundData.documents.filter((e) => e.method === cashId.$id).reduce((acc, prev) => acc + prev.amount, 0));
-        const lydiaId = payMethods.find((e) => e.name === "lydia")
-        setFundLydia(fundData.documents.filter((e) => e.method === lydiaId.$id).reduce((acc, prev) => acc + prev.amount, 0))
+        const cashId = payMethods.find((e) => e.name === "cash");
+        setFundCash(
+          fundData.documents
+            .filter((e) => e.method === cashId.$id)
+            .reduce((acc, prev) => acc + prev.amount, 0)
+        );
+        const lydiaId = payMethods.find((e) => e.name === "lydia");
+        setFundLydia(
+          fundData.documents
+            .filter((e) => e.method === lydiaId.$id)
+            .reduce((acc, prev) => acc + prev.amount, 0)
+        );
       }
-    }
+    };
 
     if (payMethods.length > 0) {
-      getMoney()
+      getMoney();
     }
-  }, [payMethods])
+  }, [payMethods]);
 
   useEffect(() => {
     const today = new Date();
-    today.setHours(0)
-    today.setMinutes(0)
-    today.setSeconds(0)
+    today.setHours(0);
+    today.setMinutes(0);
+    today.setSeconds(0);
 
-    const todaySub = client.subscribe(`collections.${process.env.NEXT_PUBLIC_CONSUME_COLLECTION}.documents`, (e) => {
-      if (e.events.includes(`collections.${process.env.NEXT_PUBLIC_CONSUME_COLLECTION}.documents.*.create`)) {
-        if (e.payload.consumedAt >= today.toISOString()) {
-          setTodayCharge((c) => c + 1)
+    const todaySub = client.subscribe(
+      `collections.${process.env.NEXT_PUBLIC_CONSUME_COLLECTION}.documents`,
+      (e) => {
+        if (
+          e.events.includes(
+            `collections.${process.env.NEXT_PUBLIC_CONSUME_COLLECTION}.documents.*.create`
+          )
+        ) {
+          if (e.payload.consumedAt >= today.toISOString()) {
+            setTodayCharge((c) => c + 1);
+          }
         }
       }
-    })
+    );
 
-    const trackedSub = client.subscribe(`collections.${process.env.NEXT_PUBLIC_CONSUME_COLLECTION}.documents`, (e) => {
-      if (e.events.includes(`collections.${process.env.NEXT_PUBLIC_CONSUME_COLLECTION}.documents.*.create`)) {
-        setTrackedUsers((t) => t + 1)
+    const trackedSub = client.subscribe(
+      `collections.${process.env.NEXT_PUBLIC_CONSUME_COLLECTION}.documents`,
+      (e) => {
+        if (
+          e.events.includes(
+            `collections.${process.env.NEXT_PUBLIC_CONSUME_COLLECTION}.documents.*.create`
+          )
+        ) {
+          setTrackedUsers((t) => t + 1);
+        }
       }
-    })
+    );
 
-    const fundsSub = client.subscribe( `collections.${process.env.NEXT_PUBLIC_FUND_COLLECTION}.documents` ,(e) => {
-      if (e.events.includes(`collections.${process.env.NEXT_PUBLIC_FUND_COLLECTION}.documents.*.create`)) {
-        setFund(e.payload.totalAmount)
+    const fundsSub = client.subscribe(
+      `collections.${process.env.NEXT_PUBLIC_FUND_COLLECTION}.documents`,
+      (e) => {
+        if (
+          e.events.includes(
+            `collections.${process.env.NEXT_PUBLIC_FUND_COLLECTION}.documents.*.create`
+          )
+        ) {
+          setFund(e.payload.totalAmount);
+        }
       }
-    })
+    );
 
     return () => {
-      todaySub()
-      trackedSub()
-      fundsSub()
-    }
-  })
+      todaySub();
+      trackedSub();
+      fundsSub();
+    };
+  });
 
   return (
     <div className="w-full h-full">

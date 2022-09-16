@@ -6,6 +6,7 @@ import loadingAtom from "../../context/atoms/loadingAtom";
 import { client, database } from "../../utils/client";
 import Pagination from "../../components/Pagination";
 import toast from "react-hot-toast";
+import { Query } from "appwrite";
 
 export default function Credits() {
   const [charges, setCharges] = useState([]);
@@ -22,12 +23,12 @@ export default function Credits() {
       }
       setLoading(true);
       const data = await database.listDocuments(
+        "default",
         process.env.NEXT_PUBLIC_CREDIT_COLLECTION,
-        undefined,
-        25,
-        router.query.page ? (router.query.page - 1) * 25 : 0,
-        undefined,
-        undefined
+        [
+          Query.limit(25),
+          Query.offset(router.query.page ? (router.query.page - 1) * 25 : 0),
+        ]
       );
       if (data.total > 25) {
         console.log("should paginate");
@@ -101,18 +102,31 @@ export default function Credits() {
                       >
                         <span className="uppercase">recharge</span>
                       </button>
-                      <button className="btn btn-secondary" onClick={async () => {
-                        const toastId = toast.loading("removing one charge")
-                        await database.updateDocument(process.env.NEXT_PUBLIC_CREDIT_COLLECTION, e.$id, {
-                          charges: e.charges - 1
-                        })
-                        await database.createDocument(process.env.NEXT_PUBLIC_CONSUME_COLLECTION, "unique()", {
-                          consumedAt: new Date().toISOString(),
-                          email: e.email,
-                          consumedItems: 1
-                        })
-                        toast.success("charges updated", { id: toastId })
-                      }}>
+                      <button
+                        className="btn btn-secondary"
+                        onClick={async () => {
+                          const toastId = toast.loading("removing one charge");
+                          await database.updateDocument(
+                            "default",
+                            process.env.NEXT_PUBLIC_CREDIT_COLLECTION,
+                            e.$id,
+                            {
+                              charges: e.charges - 1,
+                            }
+                          );
+                          await database.createDocument(
+                            "default",
+                            process.env.NEXT_PUBLIC_CONSUME_COLLECTION,
+                            "unique()",
+                            {
+                              consumedAt: new Date().toISOString(),
+                              email: e.email,
+                              consumedItems: 1,
+                            }
+                          );
+                          toast.success("charges updated", { id: toastId });
+                        }}
+                      >
                         <span className="uppercase">remove 1 credit</span>
                       </button>
                     </td>

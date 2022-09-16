@@ -1,3 +1,4 @@
+import { Query } from "appwrite";
 import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
@@ -26,14 +27,13 @@ export default function DashboardFunds() {
       }
       setLoading(true);
       const data = await database.listDocuments(
+        "default",
         process.env.NEXT_PUBLIC_FUND_COLLECTION,
-        undefined,
-        25,
-        router.query.page ? (router.query.page - 1) * 25 : 0,
-        undefined,
-        undefined,
-        ["date"],
-        ["DESC"]
+        [
+          Query.limit(25),
+          Query.offset(router.query.page ? (router.query.page - 1) * 25 : 0),
+          Query.orderDesc("date"),
+        ]
       );
       if (data.total > 25) {
         console.log("should paginate");

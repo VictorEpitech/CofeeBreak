@@ -4,6 +4,7 @@ import { useSetRecoilState } from "recoil";
 import loadingAtom from "../../context/atoms/loadingAtom";
 import { client, database } from "../../utils/client";
 import Pagination from "../../components/Pagination";
+import { Query } from "appwrite";
 
 export default function Consumes() {
   const [consumed, setConsumed] = useState([]);
@@ -19,14 +20,13 @@ export default function Consumes() {
         router.push("/dashboard/consumes?page=1", undefined, { shallow: true });
       }
       const data = await database.listDocuments(
+        "default",
         process.env.NEXT_PUBLIC_CONSUME_COLLECTION,
-        undefined,
-        25,
-        router.query.page ? (router.query.page - 1) * 25 : 0,
-        undefined,
-        undefined,
-        ["consumedAt"],
-        ["DESC"]
+        [
+          Query.limit(25),
+          Query.offset(router.query.page ? (router.query.page - 1) * 25 : 0),
+          Query.orderDesc("consumedAt"),
+        ]
       );
       if (data.total > 25) {
         console.log("should paginate");
