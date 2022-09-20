@@ -3,8 +3,6 @@ import { useRouter } from "next/router";
 import { login } from "../utils/client";
 
 export default function Home() {
-  const router = useRouter();
-  router.push("/dashboard");
   return (
     <div className="flex justify-evenly gap-5">
       <img

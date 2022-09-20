@@ -1,3 +1,4 @@
+import { Query } from "appwrite";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useRecoilValue } from "recoil";
@@ -20,6 +21,7 @@ export default function ChargesAdd({ isOpen, setIsOpen, doc }) {
         return;
       }
       await database.updateDocument(
+        "default",
         process.env.NEXT_PUBLIC_CREDIT_COLLECTION,
         doc["$id"],
         { email: doc.email, charges: total }
@@ -29,15 +31,10 @@ export default function ChargesAdd({ isOpen, setIsOpen, doc }) {
         const latestFund = await database.listDocuments(
           "default",
           process.env.NEXT_PUBLIC_FUND_COLLECTION,
-          undefined,
-          1,
-          undefined,
-          undefined,
-          undefined,
-          ["date"],
-          ["DESC"]
+          [Query.limit(1), Query.orderDesc("date")]
         );
         await database.createDocument(
+          "default",
           process.env.NEXT_PUBLIC_FUND_COLLECTION,
           "unique()",
           {

@@ -1,3 +1,4 @@
+import { Query } from "appwrite";
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 import {
@@ -24,13 +25,7 @@ export default function FundGraph() {
         const d = await database.listDocuments(
           "default",
           process.env.NEXT_PUBLIC_FUND_COLLECTION,
-          undefined,
-          100,
-          100 * offset,
-          undefined,
-          undefined,
-          ["date"],
-          ["ASC"]
+          [Query.limit(100), Query.offset(100 * offset), Query.orderAsc("date")]
         );
         count += d.documents.length;
         d.documents.forEach((element) => {
