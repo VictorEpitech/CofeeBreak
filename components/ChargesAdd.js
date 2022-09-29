@@ -30,7 +30,6 @@ export default function ChargesAdd({ isOpen, setIsOpen, doc }) {
           `${doc.email} recharge`
         );
         toast.success("funds updated", { id: "funds" });
-        //TODO implement add to funds
       }
       setIsOpen(false);
     },
