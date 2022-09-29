@@ -12,7 +12,7 @@ export default function Out() {
     setUser(null);
     toast.success("bye bye");
     redirect("/");
-  }, []);
+  }, [setUser]);
   return (
     <div className="w-full h-full flex flex-col justify-center items-center">
       <h2>Signing you out</h2>
