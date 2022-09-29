@@ -9,6 +9,8 @@ import { useSetRecoilState } from "recoil";
 import userAtom from "../context/atoms/userAtom";
 
 export default function Home() {
+  const setUser = useSetRecoilState(userAtom);
+  const router = useRouter();
   const formik = useFormik({
     initialValues: {
       email: "",
@@ -20,16 +22,16 @@ export default function Home() {
       try {
         const res = await login(values);
         const data = JSON.parse(res.data);
-        setUser({ user: data.user, token: data.token });
+        setUser(...data.user);
         localStorage.setItem("coffee-token", data.token);
         toast.success("welcome back", { id: "login" });
+        router.replace("/dashboard");
       } catch (error) {
         toast.error("something went wrong. Try again later", { id: "login" });
       }
       console.log(values);
     },
   });
-  const setUser = useSetRecoilState(userAtom);
   return (
     <div className="flex justify-evenly gap-5">
       <img
