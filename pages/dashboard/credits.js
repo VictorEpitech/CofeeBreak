@@ -3,66 +3,27 @@ import { useState, useEffect } from "react";
 import { useSetRecoilState } from "recoil";
 import ChargesAdd from "../../components/ChargesAdd";
 import loadingAtom from "../../context/atoms/loadingAtom";
-import { client, database } from "../../utils/client";
-import Pagination from "../../components/Pagination";
+import { getCharges } from "../../utils/client";
 import toast from "react-hot-toast";
-import { Query } from "appwrite";
 
 export default function Credits() {
   const [charges, setCharges] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [currentDoc, setCurrentDoc] = useState();
-  const [totalPages, setTotalPages] = useState(1);
   const router = useRouter();
   const setLoading = useSetRecoilState(loadingAtom);
 
   useEffect(() => {
-    const getCharges = async () => {
-      if (!router.query?.page) {
-        router.push("/dashboard/credits?page=1", undefined, { shallow: true });
-      }
+    const getData = async () => {
       setLoading(true);
-      const data = await database.listDocuments(
-        "default",
-        process.env.NEXT_PUBLIC_CREDIT_COLLECTION,
-        [
-          Query.limit(25),
-          Query.offset(router.query.page ? (router.query.page - 1) * 25 : 0),
-        ]
-      );
-      if (data.total > 25) {
-        console.log("should paginate");
-        setTotalPages(
-          Math.floor(data.total / 25 + (data.total % 25 !== 0 ? 1 : 0))
-        );
-      }
-      setCharges(data.documents);
+      const res = await getCharges();
+      const data = JSON.parse(res.data);
+      console.log(data);
+      setCharges(data.charges);
       setLoading(false);
     };
-    getCharges();
+    getData();
   }, [router, setLoading]);
-
-  useEffect(() => {
-    const subscription = client.subscribe(
-      `databases.default.collections.${process.env.NEXT_PUBLIC_CREDIT_COLLECTION}.documents`,
-      (e) => {
-        if (e.events.includes("collections.*.documents.*.update")) {
-          console.log(e.payload);
-          setCharges((old) => {
-            let newData = [...old];
-            const changeIndex = newData.findIndex(
-              (x) => x.$id === e.payload.$id
-            );
-            if (changeIndex > -1) {
-              newData[changeIndex] = { ...e.payload };
-            }
-            return newData;
-          });
-        }
-      }
-    );
-    return () => subscription();
-  }, []);
 
   return (
     <>
@@ -89,7 +50,7 @@ export default function Credits() {
               </thead>
               <tbody>
                 {charges.map((e) => (
-                  <tr key={e.$id}>
+                  <tr key={e._id}>
                     <td>{e.email}</td>
                     <td>{e.charges}</td>
                     <td className=" space-x-4">
@@ -136,11 +97,6 @@ export default function Credits() {
             </table>
           </>
         )}
-        <Pagination
-          totalPages={totalPages}
-          router={router}
-          url="/dashboard/credits"
-        ></Pagination>
       </div>
     </>
   );

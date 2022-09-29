@@ -5,7 +5,13 @@ import { useRecoilState, useRecoilValue } from "recoil";
 import loadingAtom from "../context/atoms/loadingAtom";
 import payMethodsAtom from "../context/atoms/payMethods";
 import userAtom from "../context/atoms/userAtom";
-import { account, client, database } from "../utils/client";
+import {
+  account,
+  client,
+  database,
+  getPaymentMethods,
+  verify,
+} from "../utils/client";
 import Footer from "./Footer";
 import Header from "./Header";
 
@@ -17,31 +23,23 @@ export default function Layout({ children }) {
 
   useEffect(() => {
     const getUser = async () => {
-      try {
-        const u = await account.get();
-        setUser(u);
-      } catch (error) {
+      const token = localStorage.getItem("coffee-token");
+      if (token) {
+        const res = await verify(token);
+        const data = JSON.parse(res.data);
+        setUser(data);
+      } else {
         toast.error("could not authenticate you, please sign in again");
-        router.push("/");
+        router.replace("/");
       }
     };
     const getPayMethods = async () => {
-      try {
-        const res = await database.listDocuments(
-          "default",
-          process.env.NEXT_PUBLIC_PAYMENT_COLLECTION
-        );
-        if (res.documents.length > 0) {
-          setPayMethods(res.documents);
-        }
-      } catch (error) {
-        toast.error("could not get payment methods");
-        console.error(error);
-        router.push("/");
-      }
+      const res = await getPaymentMethods();
+      const data = JSON.parse(res.data);
+      setPayMethods(data.payments);
     };
     if (router.pathname !== "/") {
-      //getUser();
+      getUser();
       getPayMethods();
     }
   }, [router, setPayMethods, setUser]);

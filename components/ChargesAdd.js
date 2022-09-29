@@ -1,63 +1,40 @@
-import { Query } from "appwrite";
+import { useFormik } from "formik";
+import { clearPreviewData } from "next/dist/server/api-utils";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useRecoilValue } from "recoil";
 import payMethodsAtom from "../context/atoms/payMethods";
-import { client, database } from "../utils/client";
+import AddChargeSchema from "../schemas/charges.add.schema";
+import Input from "../components/Input";
+import { addFunds, client, recharge } from "../utils/client";
 
 export default function ChargesAdd({ isOpen, setIsOpen, doc }) {
-  const [value, setValue] = useState(0);
-  const [inFunds, setInFunds] = useState(true);
-  const [payment, setPayment] = useState(undefined);
   const payMethods = useRecoilValue(payMethodsAtom);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const total = parseFloat(value) + parseFloat(doc.charges);
-    try {
-      console.log(doc);
-      if (inFunds && !payment) {
-        toast.error("please choose pay method");
-        return;
-      }
-      await database.updateDocument(
-        "default",
-        process.env.NEXT_PUBLIC_CREDIT_COLLECTION,
-        doc["$id"],
-        { email: doc.email, charges: total }
-      );
-      toast.success("charges updated");
-      if (inFunds) {
-        const latestFund = await database.listDocuments(
-          "default",
-          process.env.NEXT_PUBLIC_FUND_COLLECTION,
-          [Query.limit(1), Query.orderDesc("date")]
+  const formik = useFormik({
+    initialValues: {
+      charges: 0,
+      addToFunds: true,
+      payment_method: "",
+    },
+    validationSchema: AddChargeSchema,
+    onSubmit: async (values) => {
+      toast.loading("updating charges", { id: "charges" });
+      await recharge(doc._id, values.charges);
+      toast.success("charges updated", { id: "charges" });
+      if (values.addToFunds) {
+        toast.loading("updating funds", { id: "funds" });
+        await addFunds(
+          new Date().toISOString(),
+          process.env.NEXT_PUBLIC_CHARGE_VALUE * values.charges,
+          values.payment_method,
+          `${doc.email} recharge`
         );
-        await database.createDocument(
-          "default",
-          process.env.NEXT_PUBLIC_FUND_COLLECTION,
-          "unique()",
-          {
-            amount: value * parseFloat(process.env.NEXT_PUBLIC_CHARGE_VALUE),
-            reason: `${doc.email} recharge` || null,
-            date: new Date().toISOString(),
-            totalAmount:
-              (latestFund.documents[0]?.totalAmount ?? 0) +
-              value * parseFloat(process.env.NEXT_PUBLIC_CHARGE_VALUE),
-            method: payment,
-          }
-        );
-        toast.success("funds updated");
+        toast.success("funds updated", { id: "funds" });
+        //TODO implement add to funds
       }
-      setValue(0);
-      setInFunds(true);
-      setPayment(undefined);
       setIsOpen(false);
-    } catch (error) {
-      console.error(error);
-      toast.error("something went wrong");
-    }
-  };
+    },
+  });
 
   if (isOpen) {
     return (
@@ -72,46 +49,49 @@ export default function ChargesAdd({ isOpen, setIsOpen, doc }) {
           >
             <div className="card-body">
               <h2 className="card-title">Add / Remove funds</h2>
-              <form onSubmit={handleSubmit}>
+              <form onSubmit={formik.handleSubmit}>
+                <Input
+                  inputName="charges"
+                  htmlFor="charges"
+                  inputValue={formik.values.charges}
+                  labelText="Charges"
+                  error={formik.errors.charges}
+                  onInputChange={formik.handleChange}
+                  inputType="number"
+                  inputPlaceholder="number of charges"
+                  required
+                />
                 <div className="form-control">
-                  <label className="label">
-                    <span className="label-text">Amount to recharge</span>
+                  <label className="label cursor-pointer">
+                    <span className="label-text">Add to Funds</span>
+                    <input
+                      type="checkbox"
+                      name="addToFunds"
+                      onChange={formik.handleChange}
+                      checked={formik.values.addToFunds}
+                      className="checkbox checkbox-primary"
+                    />
                   </label>
-                  <input
-                    min={1}
-                    className="input input-bordered w-full max-w-xs"
-                    type="number"
-                    placeholder="Enter Amount"
-                    required
-                    value={value}
-                    onChange={(e) => setValue(e.target.value)}
-                  />
-                  <label htmlFor="funds">Add to funds ?</label>
-                  <input
-                    name="funds"
-                    type="checkbox"
-                    checked={inFunds}
-                    onChange={() => setInFunds(!inFunds)}
-                    className="checkbox"
-                  />
-                  {inFunds && (
-                    <select
-                      className="select select-bordered w-full max-w-x"
-                      defaultValue="none"
-                      required
-                      onChange={(e) => setPayment(e.target.value)}
-                    >
-                      <option disabled value="none">
-                        Select payment method
-                      </option>
-                      {payMethods.map((e) => (
-                        <option key={e.$id} value={e.$id}>
-                          {e.name}
-                        </option>
-                      ))}
-                    </select>
-                  )}
                 </div>
+                <select
+                  className="select select-bordered w-full max-w-x"
+                  value={formik.values.payment_method}
+                  name="payment_method"
+                  id="payment_method"
+                  onChange={formik.handleChange}
+                >
+                  <option value="">Select payment method</option>
+                  {payMethods.map((e) => (
+                    <option key={e._id} value={e._id}>
+                      {e.name}
+                    </option>
+                  ))}
+                </select>
+                {formik.errors.payment_method && (
+                  <div className="text-red-500">
+                    {formik.errors.payment_method}
+                  </div>
+                )}
                 <div className="card-actions justify-end mt-3">
                   <button
                     className="btn btn-error"
