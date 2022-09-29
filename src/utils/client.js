@@ -3,7 +3,7 @@ import axios, { Axios } from "axios";
 const BASE_URL =
   process.env.NODE_ENV === "development"
     ? "http://localhost:4000"
-    : "cofeebreakapi-production.up.railway.app";
+    : "https://cofeebreakapi-production.up.railway.app";
 
 const client = new Axios({
   baseURL: BASE_URL,
