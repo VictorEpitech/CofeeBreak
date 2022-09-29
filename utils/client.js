@@ -76,6 +76,14 @@ const deleteFunds = async (id) => {
   });
 };
 
+const getConsumed = async () => {
+  return client.get("/consumed", {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("coffee-token")}`,
+    },
+  });
+};
+
 export {
   client,
   login,
@@ -86,4 +94,5 @@ export {
   getFunds,
   addFunds,
   deleteFunds,
+  getConsumed,
 };
