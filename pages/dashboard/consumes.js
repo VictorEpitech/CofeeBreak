@@ -40,8 +40,8 @@ export default function Consumes() {
             <tbody>
               {consumed.map((e) => {
                 return (
-                  <tr key={e.$id}>
-                    <td>{new Date(e.consumedAt).toLocaleDateString()}</td>
+                  <tr key={e._id}>
+                    <td>{new Date(e.date).toLocaleDateString()}</td>
                     <td>{e.email}</td>
                     <td>{e.consumedItems}</td>
                   </tr>
