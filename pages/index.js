@@ -20,8 +20,9 @@ export default function Home() {
       try {
         const res = await login(values);
         const data = JSON.parse(res.data);
-        toast.success("welcome back", { id: "login" });
         setUser({ user: data.user, token: data.token });
+        localStorage.setItem("coffee-token", data.token);
+        toast.success("welcome back", { id: "login" });
       } catch (error) {
         toast.error("something went wrong. Try again later", { id: "login" });
       }
@@ -49,6 +50,7 @@ export default function Home() {
               inputType="email"
               required
               inputPlaceholder="enter your email here"
+              error={formik.errors.email}
             />
             <Input
               labelText="Password"
@@ -59,6 +61,7 @@ export default function Home() {
               inputType="password"
               required
               inputPlaceholder="enter your password here"
+              error={formik.errors.password}
             />
           </div>
           <div className="card-actions justify-end">
