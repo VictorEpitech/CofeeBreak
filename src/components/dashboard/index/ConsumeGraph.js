@@ -1,7 +1,6 @@
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 import {
-  Legend,
   Line,
   LineChart,
   ResponsiveContainer,
@@ -9,7 +8,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { client, database } from "../../../utils/client";
+import { getConsumed } from "../../../utils/client";
 
 export default function ConsumeGraph() {
   const [data, setData] = useState([]);
@@ -17,45 +16,23 @@ export default function ConsumeGraph() {
 
   useEffect(() => {
     const getData = async () => {
-      let count = 0;
-      let offset = 0;
       const tmp = [];
-      // if (data.length === 0) {
-      //   while (true) {
-      //     const d = await database.listDocuments(
-      //       "default",
-      //       process.env.NEXT_PUBLIC_CONSUME_COLLECTION,
-      //       [
-      //         Query.offset(100 * offset),
-      //         Query.limit(100),
-      //         Query.orderAsc("consumedAt"),
-      //       ]
-      //     );
-      //     count += d.documents.length;
-      //     d.documents.forEach((element) => {
-      //       if (
-      //         tmp.length > 0 &&
-      //         new dayjs(element.consumedAt).isSame(
-      //           tmp[tmp.length - 1]["consumedAt"],
-      //           "day"
-      //         )
-      //       ) {
-      //         tmp[tmp.length - 1]["consumedItems"] += element.consumedItems;
-      //       } else {
-      //         tmp.push(element);
-      //       }
-      //     });
-      //     if (count === d.total) break;
-      //     offset += 1;
-      //   }
-      // }
+      const d = JSON.parse((await getConsumed()).data).consumed.reverse();
+      d.forEach((element) => {
+        if (
+          tmp.length > 0 &&
+          new dayjs(element.date).isSame(tmp[tmp.length - 1]["date"], "day")
+        ) {
+          tmp[tmp.length - 1]["consumedItems"] += element.consumedItems;
+        } else {
+          tmp.push(element);
+        }
+      });
       setData(tmp);
       setLoading(false);
     };
-    // if (data.length === 0) {
-    //   getData();
-    // }
-  }, [data]);
+    getData();
+  }, []);
 
   if (loading) {
     return (
@@ -75,7 +52,7 @@ export default function ConsumeGraph() {
       <ResponsiveContainer>
         <LineChart data={data}>
           <XAxis
-            dataKey="consumedAt"
+            dataKey="date"
             tickFormatter={(value) => new Date(value).toLocaleDateString()}
           />
           <YAxis />

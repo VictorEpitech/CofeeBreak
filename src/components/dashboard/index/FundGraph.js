@@ -1,7 +1,6 @@
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 import {
-  Legend,
   Line,
   LineChart,
   ResponsiveContainer,
@@ -9,43 +8,32 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { client } from "../../../utils/client";
+import { getFunds } from "../../../utils/client";
 
 export default function FundGraph() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    let offset = 0;
-    let count = 0;
     const getData = async () => {
       const tmp = [];
-      // while (true) {
-      //   const d = await database.listDocuments(
-      //     "default",
-      //     process.env.NEXT_PUBLIC_FUND_COLLECTION,
-      //     [Query.limit(100), Query.offset(100 * offset), Query.orderAsc("date")]
-      //   );
-      //   count += d.documents.length;
-      //   d.documents.forEach((element) => {
-      //     if (
-      //       tmp.length > 0 &&
-      //       new dayjs(element.date).isSame(tmp[tmp.length - 1]["date"], "day")
-      //     ) {
-      //       tmp.pop();
-      //       tmp.push(element);
-      //     } else {
-      //       tmp.push(element);
-      //     }
-      //   });
-      //   if (count === d.total) break;
-      //   offset += 1;
-      // }
+      const d = JSON.parse((await getFunds()).data).funds.reverse();
+      d.forEach((element) => {
+        if (
+          tmp.length > 0 &&
+          new dayjs(element.date).isSame(tmp[tmp.length - 1]["date"], "day")
+        ) {
+          tmp.pop();
+          tmp.push(element);
+        } else {
+          tmp.push(element);
+        }
+      });
       setData(tmp);
       setLoading(false);
     };
-    //if (data.length === 0) getData();
-  }, [data]);
+    getData();
+  }, []);
 
   if (loading) {
     return (
