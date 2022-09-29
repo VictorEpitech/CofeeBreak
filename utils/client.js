@@ -1,20 +1,19 @@
-import { Account, Client, Databases } from "appwrite";
+import axios, { Axios } from "axios";
 
 const BASE_URL =
   process.env.NODE_ENV === "development"
     ? "http://localhost:4000"
     : "https://cofee-break.vercel.app";
 
-const client = new Client()
-  .setEndpoint(process.env.NEXT_PUBLIC_APPWRITE_URL)
-  .setProject(process.env.NEXT_PUBLIC_APPWRITE_PROJECT);
-const account = new Account(client);
-const database = new Databases(client, "default");
-const login = () =>
-  account.createOAuth2Session(
-    "microsoft",
-    `${BASE_URL}/auth/success`,
-    `${BASE_URL}/auth/failure`
-  );
+const client = new Axios({
+  baseURL: BASE_URL,
+  headers: {
+    "content-type": "application/json",
+  },
+});
 
-export { client, login, account, database };
+const login = async (data) => {
+  return client.post("/auth/login", JSON.stringify(data));
+};
+
+export { client, login };
