@@ -27,13 +27,10 @@ export default function DashboardHome() {
       today.setSeconds(0);
       const todayCharge = JSON.parse(
         (await getConsumed()).data
-      ).consumed?.filter((e) => e.consumedAt >= today.toISOString);
+      ).consumed?.filter((e) => new Date(e.date) >= today);
 
       setTodayCharge(
-        todayCharge?.documents?.reduce(
-          (acc, value) => acc + value.consumedItems,
-          0
-        ) ?? 0
+        todayCharge?.reduce((acc, value) => acc + value.consumedItems, 0) ?? 0
       );
       setTrackedUsers(trackedData.charges.length);
       setLoading(false);

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useSetRecoilState } from "recoil";
 import ChargesAdd from "../../components/ChargesAdd";
 import loadingAtom from "../../context/atoms/loadingAtom";
-import { getCharges, recharge } from "../../utils/client";
+import { createConsumed, getCharges, recharge } from "../../utils/client";
 import toast from "react-hot-toast";
 
 export default function Credits() {
@@ -66,6 +66,11 @@ export default function Credits() {
                         onClick={async () => {
                           toast.loading("removing charge", { id: "delete" });
                           await recharge(e._id, -1);
+                          await createConsumed({
+                            date: new Date().toISOString(),
+                            email: e.email,
+                            consumedItems: 1,
+                          });
                           toast.success("charge removed", { id: "delete" });
                         }}
                       >

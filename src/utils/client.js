@@ -84,6 +84,14 @@ const getConsumed = async () => {
   });
 };
 
+const createConsumed = async (data) => {
+  return client.post("/consumed", JSON.stringify(data), {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("coffee-token")}`,
+    },
+  });
+};
+
 export {
   client,
   login,
@@ -95,4 +103,5 @@ export {
   addFunds,
   deleteFunds,
   getConsumed,
+  createConsumed,
 };
