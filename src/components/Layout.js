@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import toast from "react-hot-toast";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useRecoilValue, useSetRecoilState } from "recoil";
+import { useRecoilState, useSetRecoilState } from "recoil";
 import loadingAtom from "../context/atoms/loadingAtom";
 import payMethodsAtom from "../context/atoms/payMethods";
 import userAtom from "../context/atoms/userAtom";
@@ -12,12 +12,13 @@ import Header from "./Header";
 export default function Layout({ children }) {
   const setUser = useSetRecoilState(userAtom);
   const setPayMethods = useSetRecoilState(payMethodsAtom);
-  const loading = useRecoilValue(loadingAtom);
+  const [loading, setLoading] = useRecoilState(loadingAtom);
   const navigate = useNavigate();
   const location = useLocation();
 
   useEffect(() => {
     const getUser = async () => {
+      setLoading(true);
       const token = localStorage.getItem("coffee-token");
       if (token) {
         const res = await verify(token);
@@ -28,6 +29,7 @@ export default function Layout({ children }) {
         toast.error("could not authenticate you, please sign in again");
         navigate("/", { replace: true });
       }
+      setLoading(false);
     };
     const getPayMethods = async () => {
       const res = await getPaymentMethods();
@@ -37,7 +39,7 @@ export default function Layout({ children }) {
     if (location.pathname !== "/") {
       getUser();
     }
-  }, [location, setPayMethods, setUser, navigate]);
+  }, [location, setPayMethods, setUser, navigate, setLoading]);
 
   return (
     <div id="root" className="relative">
