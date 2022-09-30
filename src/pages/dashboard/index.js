@@ -71,7 +71,6 @@ export default function DashboardHome() {
           <StatBlock value={todayCharge} title="Consumed Today" />
         </div>
       </div>
-      <div>{"NDEFReader" in window && <button>scan me</button>}</div>
       <div className="w-full flex flex-col lg:flex-row lg:justify-evenly lg:space-x-4 mt-4">
         <div className="card bg-base-100 shadow-xl w-full">
           <div className="card-body">

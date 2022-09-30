@@ -32,13 +32,13 @@ export default function Home() {
     },
   });
   return (
-    <div className="flex justify-evenly gap-5">
+    <div className="flex flex-col lg:flex-row justify-evenly gap-5">
       <img
         src="/coffee2.jpg"
         alt="coffee"
-        className="h-auto w-2/3 rounded-lg"
+        className="h-auto lg:w-2/3 rounded-lg"
       />
-      <div className="w-1/3 card self-center">
+      <div className="lg:w-1/3 card self-center">
         <h2 className="card-title">Coffee Break</h2>
         <form onSubmit={formik.handleSubmit}>
           <div className="card-body">
