@@ -1,7 +1,8 @@
 import { createContext } from "react";
 
-const themeContext = createContext()
+const themeContext = createContext();
 
-const ThemeProvider = themeContext.Provider
+const ThemeProvider = themeContext.Provider;
 
-export default ThemeProvider
+export default ThemeProvider;
+export { themeContext };
