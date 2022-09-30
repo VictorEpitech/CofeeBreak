@@ -13,6 +13,14 @@ const login = async (data) => {
   return client.post("/auth/login", JSON.stringify(data));
 };
 
+const link = async () => {
+  return client.get("/auth/link", {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("coffee-token")}`,
+    },
+  });
+};
+
 const verify = async (token) => {
   return client.get("/auth/verify", {
     headers: {
@@ -23,6 +31,14 @@ const verify = async (token) => {
 
 const getCharges = async () => {
   return client.get("/charges", {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("coffee-token")}`,
+    },
+  });
+};
+
+const getCharge = async (id) => {
+  return client.get(`/charges/${id}`, {
     headers: {
       Authorization: `Bearer ${localStorage.getItem("coffee-token")}`,
     },
@@ -89,11 +105,21 @@ const createConsumed = async (data) => {
   });
 };
 
+const scan = async (serial) => {
+  return client.get(`/scan/${serial.toUpperCase()}`, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("coffee-token")}`,
+    },
+  });
+};
+
 export {
   client,
   login,
+  link,
   verify,
   getCharges,
+  getCharge,
   getPaymentMethods,
   recharge,
   getFunds,
@@ -101,4 +127,5 @@ export {
   deleteFunds,
   getConsumed,
   createConsumed,
+  scan,
 };

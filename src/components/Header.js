@@ -12,6 +12,9 @@ const links = [
   <li key="consumes">
     <Link to="/dashboard/consumes">Consume</Link>
   </li>,
+  <li key="link">
+    <Link to="/auth/link">Link Account</Link>
+  </li>,
   <li key="out">
     <Link to="/auth/out">Sign Out</Link>
   </li>,

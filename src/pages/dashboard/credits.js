@@ -4,12 +4,14 @@ import ChargesAdd from "../../components/ChargesAdd";
 import loadingAtom from "../../context/atoms/loadingAtom";
 import { createConsumed, getCharges, recharge } from "../../utils/client";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 export default function Credits() {
   const [charges, setCharges] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [currentDoc, setCurrentDoc] = useState();
   const setLoading = useSetRecoilState(loadingAtom);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const getData = async () => {
@@ -49,7 +51,9 @@ export default function Credits() {
               <tbody>
                 {charges.map((e) => (
                   <tr key={e._id}>
-                    <td>{e.email}</td>
+                    <td onClick={() => navigate(`/dashboard/credits/${e._id}`)}>
+                      {e.email}
+                    </td>
                     <td>{e.charges}</td>
                     <td className=" space-x-4">
                       <button
