@@ -45,6 +45,11 @@ export default function Header() {
               className="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52"
             >
               {links}
+              {"NDEFReader" in window && (
+                <li>
+                  <Link to="/dashboard/scan">Scan</Link>
+                </li>
+              )}
             </ul>
           </div>
         )}
@@ -61,9 +66,9 @@ export default function Header() {
               <ul className="menu menu-vertical lg:menu-horizontal rounded-box">
                 {links}
                 {"NDEFReader" in window && (
-                  <Link to="/dashboard/scan" className="btn">
-                    Scan
-                  </Link>
+                  <li>
+                    <Link to="/dashboard/scan">Scan</Link>
+                  </li>
                 )}
               </ul>
             </div>
