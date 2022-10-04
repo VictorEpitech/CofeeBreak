@@ -1,8 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import toast from "react-hot-toast";
+import { usePagination, useSortBy, useTable } from "react-table";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import Swal from "sweetalert2";
 import FundsAdd from "../../components/FundsAdd";
+import Pagination from "../../components/Pagination";
 import loadingAtom from "../../context/atoms/loadingAtom";
 import payMethodsAtom from "../../context/atoms/payMethods";
 import Trash from "../../icons/trash";
@@ -25,6 +27,88 @@ export default function DashboardFunds() {
     getData();
   }, [setFunds, setLoading]);
 
+  const data = useMemo(() => {
+    return funds.map((e, idx) => ({
+      date: new Date(e.date).toLocaleDateString(),
+      amount: e.amount,
+      reason: e.reason || "N/A",
+      method: payMethods.find((p) => p._id === e.payment_method)?.name,
+      actions:
+        idx === 0
+          ? [
+              <button
+                key="delete"
+                className="btn btn-warning"
+                onClick={async () => {
+                  const response = await Swal.fire({
+                    title: "Are you sure?",
+                    text: "You are about to delete this record",
+                    showCancelButton: true,
+                    confirmButtonText: "Yes",
+                  });
+                  if (response.isConfirmed) {
+                    toast.loading("deleting document", {
+                      id: "delete",
+                    });
+                    await deleteFunds(e._id);
+                    toast.success("deleted document", {
+                      id: "delete",
+                    });
+                  }
+                }}
+              >
+                <Trash />
+              </button>,
+            ]
+          : [],
+    }));
+  }, [funds, payMethods]);
+
+  const columns = useMemo(
+    () => [
+      {
+        Header: "Date",
+        accessor: "date",
+      },
+      {
+        Header: "Amount",
+        accessor: "amount",
+      },
+      {
+        Header: "Reason",
+        accessor: "reason",
+      },
+      {
+        Header: "Method",
+        accessor: "method",
+      },
+      {
+        Header: "Actions",
+        accessor: "actions",
+      },
+    ],
+    []
+  );
+
+  const tableInstance = useTable({ columns, data }, useSortBy, usePagination);
+
+  const {
+    getTableProps,
+    getTableBodyProps,
+    headerGroups,
+    page: rows,
+    prepareRow,
+    canPreviousPage,
+    canNextPage,
+    pageOptions,
+    pageCount,
+    gotoPage,
+    nextPage,
+    previousPage,
+    setPageSize,
+    state: { pageIndex },
+  } = tableInstance;
+
   return (
     <div className="w-full h-full relative">
       {funds.length === 0 && (
@@ -35,68 +119,54 @@ export default function DashboardFunds() {
       <FundsAdd isOpen={showModal} setIsOpen={setShowModal} />
 
       <button
-        className="absolute btn btn-error bottom-10 right-5 rounded-full z-10"
+        className=" fixed btn btn-error bottom-10 right-5 rounded-full z-10"
         onClick={() => setShowModal(true)}
       >
         <span className="text-xl font-bold">+</span>
       </button>
-      {funds.length > 0 && (
-        <>
-          <table className="table w-full z-0">
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>Amount</th>
-                <th>Reason</th>
-                <th>Origin</th>
-                <th>Total</th>
-                <th>Actions</th>
+      <table className="table w-full z-0" {...getTableProps()}>
+        <thead>
+          {headerGroups.map((headerGroup) => (
+            <tr {...headerGroup.getHeaderGroupProps()}>
+              {headerGroup.headers.map((column) => (
+                <th {...column.getHeaderProps(column.getSortByToggleProps())}>
+                  {column.render("Header")}{" "}
+                  <span>
+                    {column.isSorted
+                      ? column.isSortedDesc
+                        ? " 🔽"
+                        : " 🔼"
+                      : ""}
+                  </span>
+                </th>
+              ))}
+            </tr>
+          ))}
+        </thead>
+        <tbody {...getTableBodyProps()}>
+          {rows.map((row) => {
+            prepareRow(row);
+            return (
+              <tr {...row.getRowProps()}>
+                {row.cells.map((cell) => (
+                  <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
+                ))}
               </tr>
-            </thead>
-            <tbody>
-              {funds.map((e, idx) => {
-                return (
-                  <tr key={e._id}>
-                    <td>{new Date(e.date).toLocaleDateString()}</td>
-                    <td>{e.amount}</td>
-                    <td>{e.reason || "N/A"}</td>
-                    <td>
-                      {payMethods.find((p) => p._id === e.payment_method)?.name}
-                    </td>
-                    <td>{e.totalAmount}</td>
-                    <td>
-                      {idx === 0 && (
-                        <button
-                          className="btn btn-warning"
-                          onClick={async () => {
-                            const response = await Swal.fire({
-                              title: "Are you sure?",
-                              text: "You are about to delete this record",
-                              showCancelButton: true,
-                              confirmButtonText: "Yes",
-                            });
-                            if (response.isConfirmed) {
-                              toast.loading("deleting document", {
-                                id: "delete",
-                              });
-                              await deleteFunds(e._id);
-                              toast.success("deleted document", {
-                                id: "delete",
-                              });
-                            }
-                          }}
-                        >
-                          <Trash />
-                        </button>
-                      )}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </>
-      )}
+            );
+          })}
+        </tbody>
+      </table>
+      <Pagination
+        canNextPage={canNextPage}
+        canPreviousPage={canPreviousPage}
+        gotoPage={gotoPage}
+        nextPage={nextPage}
+        pageCount={pageCount}
+        pageOptions={pageOptions}
+        previousPage={previousPage}
+        setPageSize={setPageSize}
+        pageIndex={pageIndex}
+      />
     </div>
   );
 }

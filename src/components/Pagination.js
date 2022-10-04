@@ -1,42 +1,53 @@
-function Pagination({ router, totalPages, url }) {
+function Pagination({
+  canPreviousPage,
+  canNextPage,
+  pageOptions,
+  pageCount,
+  gotoPage,
+  nextPage,
+  previousPage,
+  setPageSize,
+  pageIndex,
+}) {
   return (
     <div className="w-full flex justify-center">
       <div className="btn-group">
         <button
           className="btn"
           onClick={() => {
-            props.router.push(`${url}?page=1`);
+            gotoPage(0);
           }}
-          disabled={router.query?.page == 1 ?? true}
+          disabled={!canPreviousPage}
         >
           {"<<"}
         </button>
         <button
           className="btn"
           onClick={() => {
-            router.push(`${url}?page=${parseInt(router.query?.page) - 1}`);
+            previousPage();
           }}
-          disabled={router.query?.page < 2 ?? true}
+          disabled={!canPreviousPage}
         >
           {"<"}
         </button>
-        <button className="btn btn-active">{router.query?.page || 1}</button>
+        <button className="btn btn-active">
+          {" "}
+          {pageIndex + 1} of {pageOptions.length}
+        </button>
         <button
           className="btn"
           onClick={() => {
-            router.push(
-              `${url}?page=${(parseInt(router.query.page) || 1) + 1}`
-            );
+            nextPage();
           }}
-          disabled={router.query?.page == totalPages}
+          disabled={!canNextPage}
         >
           {">"}
         </button>
         <button
           className="btn"
-          disabled={router.query?.page == totalPages}
+          disabled={!canNextPage}
           onClick={() => {
-            props.router.push(`${url}?page=${props.totalPages}`, undefined);
+            gotoPage(pageCount + 1);
           }}
         >
           {">>"}

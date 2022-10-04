@@ -35,7 +35,6 @@ export default function CreditsDetails() {
       setLoading(true);
       const res = await getCharge(id);
       const data = JSON.parse(res.data);
-      console.log(data);
       setCharge(data.charge);
       setLoading(false);
     };
@@ -59,7 +58,7 @@ export default function CreditsDetails() {
           alt={charge.email}
           src={`https://intra.epitech.eu/file/userprofil/profilview/${charge.email}.jpg`}
         /> */}
-        <div className="bg-base-100 card shadow-xl w-1/3 mb-4">
+        <div className="bg-base-100 card shadow-xl lg:w-1/3 mb-4">
           <div className="card-body">
             <p>
               <span className="font-semibold">First Name</span>:{" "}
