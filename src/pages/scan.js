@@ -6,6 +6,7 @@ import { scan } from "../utils/client";
 import * as nfcRead from "../lottie/nfc-read-loading.json";
 import * as nfcReading from "../lottie/nfc-processing.json";
 import * as nfcSuccess from "../lottie/nfc-successful.json";
+import * as nfcFail from "../lottie/nfc-fail.json";
 
 export default function Scan() {
   const navigate = useNavigate();
@@ -31,11 +32,17 @@ export default function Scan() {
     if (info) {
       setAnimation(nfcReading);
       const trad = info.replaceAll(":", "").toUpperCase();
-      scan(trad).then((res) => {
-        setAnimation(nfcSuccess);
-        const data = JSON.parse(res.data);
-        navigate(`/dashboard/credits/${data.charge._id}`);
-      });
+      scan(trad)
+        .then((res) => {
+          setAnimation(nfcSuccess);
+          const data = JSON.parse(res.data);
+          navigate(`/dashboard/credits/${data.charge._id}`);
+        })
+        .catch((err) => {
+          toast.error("could not read card");
+          console.log(err);
+          setAnimation(nfcFail);
+        });
     }
   }, [info, navigate]);
 
