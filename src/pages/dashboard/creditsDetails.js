@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useParams } from "react-router-dom";
 import { useRecoilState } from "recoil";
-import Image from "../../components/Image";
+//import Image from "../../components/Image";
 import Input from "../../components/Input";
 import loadingAtom from "../../context/atoms/loadingAtom";
 import chargesRemoveSchema from "../../schemas/charges.remove.schema";
@@ -55,11 +55,25 @@ export default function CreditsDetails() {
   return (
     <div className="w-full h-full flex flex-col">
       <div className="flex justify-evenly">
-        <Image
+        {/* <Image
           alt={charge.email}
           src={`https://intra.epitech.eu/file/userprofil/profilview/${charge.email}.jpg`}
-        />
-        <h1 className="font-semibold">{charge.email}</h1>
+        /> */}
+        <div className="bg-base-100 card shadow-xl w-1/3 mb-4">
+          <div className="card-body">
+            <p>
+              <span className="font-semibold">First Name</span>:{" "}
+              {charge?.email?.split(".")[0].replace("1", "")}
+            </p>
+            <p>
+              <span className="font-semibold">Last Name</span>:{" "}
+              {charge?.email.split(".")[1].split("@")[0]}
+            </p>
+            <p>
+              <span className="font-semibold">Email</span>: {charge.email}
+            </p>
+          </div>
+        </div>
       </div>
       <div className="w-full flex justify-center">
         <p className="text-2xl font-bold">charges left: {charge.charges}</p>

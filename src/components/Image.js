@@ -1,11 +1,8 @@
-//import { useEffect, useState } from "react";
+import axios from "axios";
+//import { useState, useEffect } from "react";
+//import { useRecoilValue } from "recoil";
+//import userAtom from "../context/atoms/userAtom";
 
 export default function Image(props) {
-  //const [blob, setBlob] = useState("");
-
-  //useEffect(() => {}, [src]);
-
-  //if (!blob) return null;
-
   return <img {...props} alt={props.alt} />;
 }

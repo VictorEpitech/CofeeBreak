@@ -6,6 +6,7 @@ import { scan } from "../utils/client";
 export default function Scan() {
   const navigate = useNavigate();
   const [info, setInfo] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const scanner = useRef();
 
   useEffect(() => {
@@ -17,6 +18,7 @@ export default function Scan() {
       scanner.current = new window.NDEFReader();
       scanner.current.onreading = (event) => {
         setInfo(event.serialNumber);
+        setIsLoading(false);
       };
     }
   }, [navigate]);
@@ -34,12 +36,19 @@ export default function Scan() {
   return (
     <div className="w-full h-full flex flex-col justify-center items-center">
       <button
+        disabled={isLoading}
         onClick={async () => {
-          await scanner.current.scan();
+          try {
+            await scanner.current.scan();
+            setIsLoading(true);
+          } catch (error) {
+            toast.error("could not scan nfc code");
+          }
         }}
       >
         SCAN
       </button>
+      {isLoading && <div>Please wait, we're scanning for cards...</div>}
       {info}
     </div>
   );
