@@ -11,7 +11,7 @@ import { createConsumed, getCharge, recharge } from "../../utils/client";
 
 export default function CreditsDetails() {
   const { id } = useParams();
-  const [charge, setCharge] = useState({});
+  const [charge, setCharge] = useState(null);
   const [loading, setLoading] = useRecoilState(loadingAtom);
   const formik = useFormik({
     initialValues: {
@@ -44,7 +44,7 @@ export default function CreditsDetails() {
     }
   }, [id, setLoading]);
 
-  if (loading) {
+  if (loading || !charge) {
     return (
       <div>
         <p>loading</p>
@@ -63,11 +63,11 @@ export default function CreditsDetails() {
           <div className="card-body">
             <p>
               <span className="font-semibold">First Name</span>:{" "}
-              {charge?.email?.split(".")[0].replace("1", "")}
+              {charge?.email?.split(".")[0]?.replace("1", "")}
             </p>
             <p>
               <span className="font-semibold">Last Name</span>:{" "}
-              {charge?.email.split(".")[1].split("@")[0]}
+              {charge?.email.split(".")[1]?.split("@")[0]}
             </p>
             <p>
               <span className="font-semibold">Email</span>: {charge.email}
@@ -76,7 +76,7 @@ export default function CreditsDetails() {
         </div>
       </div>
       <div className="w-full flex justify-center">
-        <p className="text-2xl font-bold">charges left: {charge.charges}</p>
+        <p className="text-2xl font-bold">charges left: {charge?.charges}</p>
       </div>
       <div className="w-full card shadow-lg bg-base-100">
         <form onSubmit={formik.handleSubmit}>
@@ -93,7 +93,7 @@ export default function CreditsDetails() {
               inputType="number"
             />
             <button
-              disabled={charge.charges - formik.values.charges < 0}
+              disabled={charge?.charges - formik.values.charges < 0}
               className="mt-3 btn btn-primary btn-block"
               type="submit"
             >

@@ -36,7 +36,7 @@ function App() {
   return (
     <ThemeProvider value={{ theme, setTheme }}>
       <BrowserRouter>
-        <Helmet>
+        <Helmet title="Coffee Break">
           <html data-theme={theme} lang="en" />
         </Helmet>
         <RecoilRoot>
