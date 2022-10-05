@@ -47,7 +47,7 @@ function Pagination({
           className="btn"
           disabled={!canNextPage}
           onClick={() => {
-            gotoPage(pageCount + 1);
+            gotoPage(pageCount - 1);
           }}
         >
           {">>"}
