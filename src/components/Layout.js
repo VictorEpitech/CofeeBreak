@@ -10,7 +10,7 @@ import Footer from "./Footer";
 import Header from "./Header";
 
 export default function Layout({ children }) {
-  const setUser = useSetRecoilState(userAtom);
+  const [user, setUser] = useRecoilState(userAtom);
   const setPayMethods = useSetRecoilState(payMethodsAtom);
   const [loading, setLoading] = useRecoilState(loadingAtom);
   const navigate = useNavigate();
@@ -25,6 +25,8 @@ export default function Layout({ children }) {
         const data = JSON.parse(res.data);
         setUser(data);
         await getPayMethods();
+        if (location.pathname === "/")
+          navigate("/dashboard", { replace: true });
       } else {
         toast.error("could not authenticate you, please sign in again");
         navigate("/", { replace: true });
@@ -36,10 +38,10 @@ export default function Layout({ children }) {
       const data = JSON.parse(res.data);
       setPayMethods(data.payments);
     };
-    if (location.pathname !== "/") {
+    if (!user && localStorage.getItem("coffee-token")) {
       getUser();
     }
-  }, [location, setPayMethods, setUser, navigate, setLoading]);
+  }, [location, setPayMethods, setUser, navigate, setLoading, user]);
 
   return (
     <div id="root" className="relative">
