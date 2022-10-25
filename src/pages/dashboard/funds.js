@@ -32,6 +32,7 @@ export default function DashboardFunds() {
       date: new Date(e.date).toLocaleDateString(),
       amount: e.amount,
       reason: e.reason || "N/A",
+      totalAmount: e.totalAmount.toFixed(2),
       method: payMethods.find((p) => p._id === e.payment_method)?.name,
       actions:
         idx === 0
@@ -81,6 +82,10 @@ export default function DashboardFunds() {
       {
         Header: "Method",
         accessor: "method",
+      },
+      {
+        Header: "Total",
+        accessor: "totalAmount",
       },
       {
         Header: "Actions",
