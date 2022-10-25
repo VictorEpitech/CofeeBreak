@@ -23,7 +23,7 @@ export default function ChargesAdd({ isOpen, setIsOpen, doc }) {
         toast.loading("updating funds", { id: "funds" });
         await addFunds(
           new Date().toISOString(),
-          process.env.NEXT_PUBLIC_CHARGE_VALUE * values.charges,
+          process.env.REACT_APP_CHARGE_VALUE * values.charges,
           values.payment_method,
           `${doc.email} recharge`
         );
