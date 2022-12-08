@@ -1,5 +1,6 @@
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
+import DatePicker from "react-date-picker";
 import {
   Line,
   LineChart,
@@ -13,10 +14,12 @@ import { getFunds } from "../../../utils/client";
 export default function FundGraph() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
 
   useEffect(() => {
     const getData = async () => {
-      const tmp = [];
+      let tmp = [];
       const d = JSON.parse((await getFunds()).data).funds.reverse();
       d.forEach((element) => {
         if (
@@ -29,7 +32,10 @@ export default function FundGraph() {
           tmp.push(element);
         }
       });
+      tmp = tmp.sort((a, b) => new Date(a.date) < new Date(b.date));
       setData(tmp);
+      setStartDate(new Date(tmp[0].date));
+      setEndDate(new Date(tmp[tmp.length - 1].date));
       setLoading(false);
     };
     getData();
@@ -50,8 +56,34 @@ export default function FundGraph() {
 
   return (
     <div style={{ width: "100%", height: "300px" }}>
+      <div className="w-full flex justify-between">
+        <div>
+          <DatePicker
+            clearIcon={null}
+            onChange={setStartDate}
+            value={startDate}
+            className="input"
+            minDate={new Date(data[0].date)}
+            maxDate={new Date(data[data.length - 1].date)}
+          />
+        </div>
+        <div>
+          <DatePicker
+            clearIcon={null}
+            onChange={setEndDate}
+            value={endDate}
+            className="input"
+            minDate={new Date(data[0].date)}
+            maxDate={new Date(data[data.length - 1].date)}
+          />
+        </div>
+      </div>
       <ResponsiveContainer>
-        <LineChart data={data}>
+        <LineChart
+          data={data.filter(
+            (e) => new Date(e.date) <= endDate && new Date(e.date) >= startDate
+          )}
+        >
           <XAxis
             dataKey="date"
             tickFormatter={(value) => new Date(value).toLocaleDateString()}
