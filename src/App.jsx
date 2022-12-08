@@ -8,6 +8,7 @@ import ThemeProvider from "./context/ThemeContext";
 import Navigation from "./Navigation";
 import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
 
+
 function App() {
   const [theme, setTheme] = useState("dark");
   const [worker, setWorker] = useState();

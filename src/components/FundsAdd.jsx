@@ -1,7 +1,7 @@
 import { useFormik } from "formik";
 import toast from "react-hot-toast";
 import { useRecoilValue } from "recoil";
-import Input from "../components/Input";
+import Input from "./Input";
 import payMethodsAtom from "../context/atoms/payMethods";
 import fundsAddSchema from "../schemas/funds.add.schema";
 import { addFunds } from "../utils/client";
@@ -91,7 +91,7 @@ export default function FundsAdd({ isOpen, setIsOpen }) {
                 />
 
                 <div className="card-actions justify-end mt-3">
-                  <button className="btn btn-error" onClick={() => {}}>
+                  <button className="btn btn-error" onClick={() => { }}>
                     Cancel
                   </button>
                   <button type="submit" className="btn btn-primary">

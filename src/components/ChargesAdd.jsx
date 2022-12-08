@@ -3,7 +3,7 @@ import toast from "react-hot-toast";
 import { useRecoilValue } from "recoil";
 import payMethodsAtom from "../context/atoms/payMethods";
 import AddChargeSchema from "../schemas/charges.add.schema";
-import Input from "../components/Input";
+import Input from "./Input";
 import { addFunds, recharge } from "../utils/client";
 
 export default function ChargesAdd({ isOpen, setIsOpen, doc }) {
@@ -23,7 +23,7 @@ export default function ChargesAdd({ isOpen, setIsOpen, doc }) {
         toast.loading("updating funds", { id: "funds" });
         await addFunds(
           new Date().toISOString(),
-          process.env.REACT_APP_CHARGE_VALUE * values.charges,
+          import.meta.env.VITE_CHARGE_VALUE * values.charges,
           values.payment_method,
           `${doc.email} recharge`
         );
