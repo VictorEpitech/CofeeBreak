@@ -5,7 +5,6 @@ import loadingAtom from "../../context/atoms/loadingAtom";
 import { getCharges } from "../../utils/client";
 import { Link } from "react-router-dom";
 import { usePagination, useSortBy, useTable } from "react-table";
-import Pagination from "../../components/Pagination";
 import Table from "../../components/Table";
 
 export default function Credits() {

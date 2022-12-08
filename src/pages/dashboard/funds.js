@@ -4,7 +4,6 @@ import { usePagination, useSortBy, useTable } from "react-table";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import Swal from "sweetalert2";
 import FundsAdd from "../../components/FundsAdd";
-import Pagination from "../../components/Pagination";
 import Table from "../../components/Table";
 import loadingAtom from "../../context/atoms/loadingAtom";
 import payMethodsAtom from "../../context/atoms/payMethods";

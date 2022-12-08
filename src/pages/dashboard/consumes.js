@@ -1,7 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { usePagination, useSortBy, useTable } from "react-table";
 import { useSetRecoilState } from "recoil";
-import Pagination from "../../components/Pagination";
 import Table from "../../components/Table";
 import loadingAtom from "../../context/atoms/loadingAtom";
 import { getConsumed } from "../../utils/client";
